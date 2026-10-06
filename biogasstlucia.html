@@ -1,0 +1,1877 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>BiogasSTLucia · Master Application Platform v1.0</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+<script>
+  tailwind.config = {
+    theme: {
+      extend: {
+        fontFamily: { sans:['Inter','system-ui','sans-serif'], mono:['JetBrains Mono','monospace'] }
+      }
+    }
+  };
+</script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+  body{font-family:'Inter',sans-serif;background:#f4f6f9;}
+  .mono{font-family:'JetBrains Mono',monospace;}
+  .card{background:#fff;border:1px solid #e2e8f0;border-radius:16px;box-shadow:0 1px 2px rgba(15,23,42,0.04),0 4px 12px rgba(15,23,42,0.04);}
+  .tab-active{background:#fff;color:#0e7490;border-color:#06b6d4;font-weight:700;}
+  .fade-in{animation:fade .25s ease;}
+  @keyframes fade{from{opacity:0;transform:translateY(4px);}to{opacity:1;transform:translateY(0);}}
+  input[type=range]{-webkit-appearance:none;height:6px;border-radius:999px;background:#e2e8f0;outline:none;}
+  input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:20px;height:20px;border-radius:50%;background:#06b6d4;cursor:pointer;border:3px solid #fff;box-shadow:0 1px 3px rgba(15,23,42,0.2),0 0 0 1px #06b6d4;}
+  .pulse-dot{animation:pulse 1.8s ease-in-out infinite;}
+  @keyframes pulse{0%,100%{opacity:1;}50%{opacity:0.5;}}
+  .letter-block{background:#fafbfc;border:1px solid #e2e8f0;border-radius:12px;padding:22px;font-family:'JetBrains Mono',monospace;font-size:11px;line-height:1.75;color:#334155;white-space:pre-wrap;}
+  .slide-card{background:linear-gradient(135deg,#ffffff 0%,#f8fafc 100%);border:2px solid #e2e8f0;border-radius:16px;padding:24px;transition:all .2s;}
+  .slide-card:hover{border-color:#06b6d4;box-shadow:0 8px 24px rgba(6,182,212,0.12);transform:translateY(-2px);}
+  .slide-number{display:inline-flex;align-items:center;justify-content:center;width:34px;height:34px;border-radius:10px;background:linear-gradient(135deg,#06b6d4,#2563eb);color:#fff;font-weight:900;font-size:14px;}
+  .speaker-notes{background:#fffbeb;border-left:4px solid #f59e0b;padding:12px 16px;border-radius:6px;font-size:12px;line-height:1.6;color:#78350f;margin-top:14px;}
+  .speaker-notes strong{color:#92400e;text-transform:uppercase;font-size:10px;letter-spacing:0.6px;display:block;margin-bottom:5px;}
+  .workflow{background:#0f172a;color:#67e8f9;border-radius:12px;padding:18px;font-family:'JetBrains Mono',monospace;font-size:10px;line-height:1.55;overflow-x:auto;white-space:pre;}
+  .tech-brief{background:#f8fafc;border:1px solid #e2e8f0;border-radius:12px;padding:20px;font-family:'JetBrains Mono',monospace;font-size:11px;line-height:1.75;color:#334155;white-space:pre-wrap;max-height:640px;overflow-y:auto;}
+  .comp-table th{background:#0e4a5f;color:#fff;font-size:10px;text-transform:uppercase;letter-spacing:0.5px;padding:8px 10px;text-align:left;border:1px solid #0e4a5f;}
+  .comp-table td{padding:8px 10px;border:1px solid #e2e8f0;font-size:11.5px;color:#334155;vertical-align:top;}
+  .comp-table tr:nth-child(even) td{background:#f8fafc;}
+  .comp-table tr.highlight td{background:#ecfeff !important;font-weight:700;color:#0e7490;}
+  .comp-table tr.adv td{background:#ecfeff !important;}
+  .glossary-item{border-left:3px solid transparent;transition:all .15s;}
+  .glossary-item:hover{border-left-color:#06b6d4;background:#f8fafc;}
+</style>
+</head>
+<body class="bg-[#f4f6f9] text-slate-900 min-h-screen flex flex-col antialiased">
+
+<!-- ═══════════════════════════════ HEADER ═══════════════════════════════ -->
+<header class="bg-white border-b border-slate-200 sticky top-0 z-40 shadow-sm">
+  <div class="max-w-[1400px] mx-auto px-6 py-4 flex flex-wrap justify-between items-center gap-4">
+    <div class="flex items-center gap-3">
+      <div class="bg-gradient-to-br from-cyan-500 to-blue-600 text-white w-12 h-12 rounded-xl font-black text-[10px] flex items-center justify-center tracking-wider shadow-md leading-tight text-center">BIO<br>STL</div>
+      <div>
+        <h1 class="text-base font-bold text-slate-900">BiogasSTLucia · Master Application Platform</h1>
+        <p class="text-[11px] text-slate-500">Recycle Organics × GCFT Platform · CDB/GCF Concept Note · Organic Waste-to-Energy · v1.0</p>
+      </div>
+    </div>
+    <div class="flex items-center gap-3 flex-wrap">
+      <span class="flex items-center gap-2 bg-cyan-50 border border-cyan-200 px-3 py-1.5 rounded-full text-[11px] text-cyan-700 font-semibold">
+        <span class="w-1.5 h-1.5 rounded-full bg-cyan-500 pulse-dot"></span>
+        Application Ready
+      </span>
+      <span class="hidden md:flex items-center gap-2 bg-blue-50 border border-blue-200 px-3 py-1.5 rounded-full text-[11px] text-blue-700 font-semibold">
+        <span class="w-1.5 h-1.5 rounded-full bg-blue-500"></span>
+        CDB / GCF Aligned
+      </span>
+      <span class="hidden lg:flex items-center gap-2 bg-emerald-50 border border-emerald-200 px-3 py-1.5 rounded-full text-[11px] text-emerald-700 font-semibold">
+        <span class="w-1.5 h-1.5 rounded-full bg-emerald-500"></span>
+        Global Methane Pledge
+      </span>
+      <a href="#" onclick="window.print();return false;" class="bg-cyan-500 hover:bg-cyan-600 text-white font-bold py-2 px-4 rounded-lg text-xs uppercase tracking-wider shadow-sm">📄 Print</a>
+    </div>
+  </div>
+
+  <!-- ══════════════ NAV BAR · 14 TABS ══════════════ -->
+  <nav class="max-w-[1400px] mx-auto px-6 flex gap-0 border-t border-slate-200 bg-slate-50 overflow-x-auto" style="scrollbar-width:thin;">
+    <button data-tab="overview" class="tab-btn tab-active whitespace-nowrap px-4 py-3 text-[11px] font-semibold uppercase tracking-wider border-b-2 border-transparent text-slate-500 hover:text-cyan-600 transition">Overview</button>
+    <button data-tab="tank" class="tab-btn whitespace-nowrap px-4 py-3 text-[11px] font-semibold uppercase tracking-wider border-b-2 border-transparent text-slate-500 hover:text-cyan-600 transition">Digester Design</button>
+    <button data-tab="sensors" class="tab-btn whitespace-nowrap px-4 py-3 text-[11px] font-semibold uppercase tracking-wider border-b-2 border-transparent text-slate-500 hover:text-cyan-600 transition">Sensors</button>
+    <button data-tab="carbon" class="tab-btn whitespace-nowrap px-4 py-3 text-[11px] font-semibold uppercase tracking-wider border-b-2 border-transparent text-slate-500 hover:text-cyan-600 transition">Carbon</button>
+    <button data-tab="workflow" class="tab-btn whitespace-nowrap px-4 py-3 text-[11px] font-semibold uppercase tracking-wider border-b-2 border-transparent text-slate-500 hover:text-cyan-600 transition">Workflow</button>
+    <button data-tab="competitive" class="tab-btn whitespace-nowrap px-4 py-3 text-[11px] font-semibold uppercase tracking-wider border-b-2 border-transparent text-slate-500 hover:text-cyan-600 transition">Competitive</button>
+    <button data-tab="letters" class="tab-btn whitespace-nowrap px-4 py-3 text-[11px] font-semibold uppercase tracking-wider border-b-2 border-transparent text-slate-500 hover:text-cyan-600 transition">Letters</button>
+    <button data-tab="pitch" class="tab-btn whitespace-nowrap px-4 py-3 text-[11px] font-semibold uppercase tracking-wider border-b-2 border-transparent text-slate-500 hover:text-cyan-600 transition">Pitch Deck</button>
+    <button data-tab="brief" class="tab-btn whitespace-nowrap px-4 py-3 text-[11px] font-semibold uppercase tracking-wider border-b-2 border-transparent text-slate-500 hover:text-cyan-600 transition">Tech Brief</button>
+    <button data-tab="concept" class="tab-btn whitespace-nowrap px-4 py-3 text-[11px] font-semibold uppercase tracking-wider border-b-2 border-transparent text-slate-500 hover:text-cyan-600 transition">Concept Note</button>
+    <button data-tab="investor" class="tab-btn whitespace-nowrap px-4 py-3 text-[11px] font-semibold uppercase tracking-wider border-b-2 border-transparent text-slate-500 hover:text-cyan-600 transition">Investor Pack</button>
+    <button data-tab="mou" class="tab-btn whitespace-nowrap px-4 py-3 text-[11px] font-semibold uppercase tracking-wider border-b-2 border-transparent text-slate-500 hover:text-cyan-600 transition">MOU Template</button>
+    <button data-tab="budget" class="tab-btn whitespace-nowrap px-4 py-3 text-[11px] font-semibold uppercase tracking-wider border-b-2 border-transparent text-slate-500 hover:text-cyan-600 transition">Budget</button>
+    <button data-tab="timeline" class="tab-btn whitespace-nowrap px-4 py-3 text-[11px] font-semibold uppercase tracking-wider border-b-2 border-transparent text-slate-500 hover:text-cyan-600 transition">Timeline</button>
+  </nav>
+</header>
+
+<main class="flex-grow max-w-[1400px] mx-auto w-full px-6 py-6">
+
+<!-- ═══════════════════════ TAB: OVERVIEW ═══════════════════════ -->
+<section id="tab-overview" class="tab-panel space-y-6">
+  <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+    <div class="card p-5"><p class="text-[10px] text-slate-500 uppercase tracking-widest font-bold mb-2">Grant Request</p><p class="mono text-2xl font-black text-cyan-700">$40K</p><p class="text-[10px] text-slate-500 mt-1">Conecta Caribbean</p></div>
+    <div class="card p-5"><p class="text-[10px] text-slate-500 uppercase tracking-widest font-bold mb-2">Prototype Cost</p><p class="mono text-2xl font-black text-blue-700">$900</p><p class="text-[10px] text-slate-500 mt-1">Per unit</p></div>
+    <div class="card p-5"><p class="text-[10px] text-slate-500 uppercase tracking-widest font-bold mb-2">Gas Output</p><p class="mono text-2xl font-black text-slate-900">2.0 m³</p><p class="text-[10px] text-slate-500 mt-1">Per day (max)</p></div>
+    <div class="card p-5"><p class="text-[10px] text-slate-500 uppercase tracking-widest font-bold mb-2">CO₂e / Year</p><p class="mono text-2xl font-black text-cyan-700">2.24</p><p class="text-[10px] text-slate-500 mt-1">Tonnes per unit</p></div>
+  </div>
+
+  <div class="grid md:grid-cols-2 gap-6">
+    <div class="card p-6">
+      <h3 class="text-sm font-bold text-red-700 uppercase tracking-widest mb-4">⚠ The Problem</h3>
+      <ul class="space-y-3 text-sm text-slate-700">
+        <li class="flex gap-3"><span class="text-red-600 font-bold">▸</span><span>~50% of St. Lucia's waste stream is organic — landfilled rather than recovered</span></li>
+        <li class="flex gap-3"><span class="text-red-600 font-bold">▸</span><span>77,600 tons of municipal solid waste generated annually; only 13.3% recycled</span></li>
+        <li class="flex gap-3"><span class="text-red-600 font-bold">▸</span><span>Deglos Sanitary Landfill at ~50% capacity; Vieux-Fort closed (2019) due to leachate failure</span></li>
+        <li class="flex gap-3"><span class="text-red-600 font-bold">▸</span><span>St. Lucia is a Global Methane Pledge signatory — methane from waste remains unmanaged</span></li>
+        <li class="flex gap-3"><span class="text-red-600 font-bold">▸</span><span>Tourism sector generates ~8% of waste with high organic loads (food, landscaping)</span></li>
+      </ul>
+    </div>
+    <div class="card p-6">
+      <h3 class="text-sm font-bold text-cyan-700 uppercase tracking-widest mb-4">✓ Our Solution</h3>
+      <ul class="space-y-3 text-sm text-slate-700">
+        <li class="flex gap-3"><span class="text-cyan-600 font-bold">▸</span><span>Modular anaerobic digestion — household, farm, and hotel scale (2–4 m³)</span></li>
+        <li class="flex gap-3"><span class="text-cyan-600 font-bold">▸</span><span>IoT monitoring — 4 sensors, $300/unit</span></li>
+        <li class="flex gap-3"><span class="text-cyan-600 font-bold">▸</span><span>GCFT dMRV — real-time carbon verification under Gold Standard ACDM</span></li>
+        <li class="flex gap-3"><span class="text-cyan-600 font-bold">▸</span><span>Under $900 installed per unit</span></li>
+        <li class="flex gap-3"><span class="text-cyan-600 font-bold">▸</span><span>Builds on Recycle Organics Programme (21 farmers + SALCC demo) and GIZ BioWaste Caribbean</span></li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="card p-6">
+    <h3 class="text-sm font-bold text-slate-800 mb-4">Program Snapshot</h3>
+    <div class="grid md:grid-cols-3 gap-4">
+      <div class="bg-cyan-50 border border-cyan-200 rounded-lg p-4">
+        <div class="text-[10px] font-bold text-cyan-700 uppercase tracking-wider mb-1">Phase 1 — Prototype</div>
+        <div class="text-xs text-slate-700">Dec 2026 – May 2027 · 3 units (SALCC Farm · hotel partner · household) · $40K Conecta grant</div>
+      </div>
+      <div class="bg-blue-50 border border-blue-200 rounded-lg p-4">
+        <div class="text-[10px] font-bold text-blue-700 uppercase tracking-wider mb-1">Phase 2 — Pilot Scale</div>
+        <div class="text-xs text-slate-700">2027 – 2028 · 200 units · GCF/CDB blended finance · $8.2M</div>
+      </div>
+      <div class="bg-amber-50 border border-amber-200 rounded-lg p-4">
+        <div class="text-[10px] font-bold text-amber-700 uppercase tracking-wider mb-1">Phase 3 — National + Regional</div>
+        <div class="text-xs text-slate-700">2029 – 2032 · 2,000+ units · OECS replication (Grenada, St. Vincent, Dominica)</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="card p-6 bg-gradient-to-br from-cyan-50 to-blue-50 border-2 border-cyan-300">
+    <div class="text-[10px] font-bold text-cyan-700 uppercase tracking-widest mb-2">The Reframe</div>
+    <p class="text-sm text-slate-800 leading-relaxed">St. Lucia does not have a deforestation crisis. It has an <strong>organic waste crisis</strong>. Half of everything buried at Deglos is food scraps, market waste, green waste, and manure — decomposing into methane, a greenhouse gas 28× more potent than CO₂. BiogasSTLucia converts that waste liability into clean cooking gas, agricultural fertilizer, and verified carbon credits. <strong>The landfill problem becomes a resource recovery economy.</strong></p>
+  </div>
+</section>
+
+<!-- ═══════════════════════ TAB: DIGESTER DESIGN ═══════════════════════ -->
+<section id="tab-tank" class="tab-panel hidden fade-in space-y-6">
+  <div class="card p-6">
+    <h3 class="text-sm font-bold text-slate-800 mb-4">Modular Anaerobic Digester — Technical Specification</h3>
+    <div class="overflow-x-auto">
+      <table class="w-full text-xs">
+        <thead><tr class="bg-slate-50 text-slate-600 uppercase tracking-wider text-[10px]"><th class="text-left py-3 px-3 font-bold border-b">Component</th><th class="text-left py-3 px-3 font-bold border-b">Specification</th><th class="text-right py-3 px-3 font-bold border-b">Cost (USD)</th></tr></thead>
+        <tbody class="divide-y divide-slate-100">
+          <tr><td class="py-3 px-3 font-semibold">Digester dome (2 m³)</td><td class="py-3 px-3 text-slate-600">Ferrocement, 25 mm wall</td><td class="py-3 px-3 text-right mono">$180</td></tr>
+          <tr><td class="py-3 px-3 font-semibold">Inlet pipe (150 mm)</td><td class="py-3 px-3 text-slate-600">PVC feedstock entry</td><td class="py-3 px-3 text-right mono">$25</td></tr>
+          <tr><td class="py-3 px-3 font-semibold">Outlet chamber</td><td class="py-3 px-3 text-slate-600">Ferrocement, 50 L</td><td class="py-3 px-3 text-right mono">$40</td></tr>
+          <tr><td class="py-3 px-3 font-semibold">Gas holder</td><td class="py-3 px-3 text-slate-600">Ferrocement or HDPE</td><td class="py-3 px-3 text-right mono">$120</td></tr>
+          <tr><td class="py-3 px-3 font-semibold">Gas piping</td><td class="py-3 px-3 text-slate-600">12 mm PVC + brass</td><td class="py-3 px-3 text-right mono">$35</td></tr>
+          <tr><td class="py-3 px-3 font-semibold">Bio-slurry outlet</td><td class="py-3 px-3 text-slate-600">100 mm PVC</td><td class="py-3 px-3 text-right mono">$30</td></tr>
+          <tr><td class="py-3 px-3 font-semibold">Masonry + cement</td><td class="py-3 px-3 text-slate-600">Local materials</td><td class="py-3 px-3 text-right mono">$70</td></tr>
+          <tr><td class="py-3 px-3 font-semibold">Labor (2 days)</td><td class="py-3 px-3 text-slate-600">2 masons</td><td class="py-3 px-3 text-right mono">$100</td></tr>
+          <tr class="bg-cyan-50"><td class="py-3 px-3 font-bold">TOTAL DIGESTER</td><td></td><td class="py-3 px-3 text-right mono font-bold text-cyan-700">$600</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <p class="text-[11px] text-slate-500 mt-3">Note: Prefabricated alternatives (HomeBiogas-class) range $500–$900 installed, with $20–$40/year operational cost and a 5–8 year lifespan. Ferrocement offers a lower-cost, locally-fabricated alternative with 15+ year design life.</p>
+  </div>
+
+  <div class="grid md:grid-cols-2 gap-6">
+    <div class="card p-6">
+      <h3 class="text-sm font-bold text-slate-800 mb-3">Performance Parameters (Organic Waste Feedstock)</h3>
+      <div class="space-y-2.5 text-sm">
+        <div class="flex justify-between py-2 border-b border-slate-100"><span class="text-slate-500">Digester volume</span><span class="mono font-bold">2–4 m³</span></div>
+        <div class="flex justify-between py-2 border-b border-slate-100"><span class="text-slate-500">Daily feedstock</span><span class="mono font-bold">20–60 kg</span></div>
+        <div class="flex justify-between py-2 border-b border-slate-100"><span class="text-slate-500">Feedstock mix</span><span class="mono font-bold">Food waste + manure + green waste</span></div>
+        <div class="flex justify-between py-2 border-b border-slate-100"><span class="text-slate-500">HRT</span><span class="mono font-bold">25–35 days</span></div>
+        <div class="flex justify-between py-2 border-b border-slate-100"><span class="text-slate-500">Operating temp</span><span class="mono font-bold">30–38 °C</span></div>
+        <div class="flex justify-between py-2 border-b border-slate-100"><span class="text-slate-500">Biogas output</span><span class="mono font-bold">0.5–2.0 m³/day</span></div>
+        <div class="flex justify-between py-2 border-b border-slate-100"><span class="text-slate-500">Methane content</span><span class="mono font-bold">55–65%</span></div>
+        <div class="flex justify-between py-2"><span class="text-slate-500">Fertilizer output</span><span class="mono font-bold">20–40 L/day</span></div>
+      </div>
+    </div>
+    <div class="card p-6">
+      <h3 class="text-sm font-bold text-slate-800 mb-3">Design Schematic</h3>
+      <div class="bg-slate-50 rounded-xl p-4 border border-slate-200 mono text-[10px] text-slate-700 leading-tight overflow-x-auto">
+<pre>    ┌─────────────────────┐
+    │  GAS OUTLET (12mm)  │
+    │          ▲          │
+    │     ┌────┴────┐     │  ← Gas Holder
+    │     │ BIOGAS  │     │
+    │     │═════════│     │  ← Interface
+    │     │ SLURRY  │     │
+    │     │  2 m³   │     │
+    └─────┤         ├─────┘
+          │         │
+    ╔═════╧═════════╧═════╗
+    ║ FERROCEMENT DOME    ║
+    ║ (25mm wall)         ║
+    ╚═════════════════════╝
+   INLET ▲        ▼ OUTLET
+ (150mm)         (100mm)
+  Food waste     Bio-slurry
+  Manure         Fertilizer
+  Green waste</pre>
+      </div>
+      <div class="mt-4 bg-cyan-50 border border-cyan-200 rounded-lg p-3">
+        <div class="text-[10px] font-bold text-cyan-700 uppercase tracking-wider mb-1">Feedstock Strategy</div>
+        <p class="text-[11px] text-slate-700">Co-digestion of food waste (high biogas yield) with manure (buffering capacity) and green waste (carbon balance) delivers stable, high-methane biogas. Hotels and markets supply consistent daily volumes; farms supply manure.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════════════ TAB: SENSORS ═══════════════════════ -->
+<section id="tab-sensors" class="tab-panel hidden fade-in space-y-6">
+  <div class="card p-6">
+    <h3 class="text-sm font-bold text-slate-800 mb-4">Sensor Package — Bill of Materials</h3>
+    <div class="overflow-x-auto">
+      <table class="w-full text-xs">
+        <thead><tr class="bg-slate-50 text-slate-600 uppercase tracking-wider text-[10px]"><th class="text-left py-3 px-3 font-bold border-b">Sensor</th><th class="text-left py-3 px-3 font-bold border-b">Spec</th><th class="text-left py-3 px-3 font-bold border-b">Function</th><th class="text-right py-3 px-3 font-bold border-b">Cost</th></tr></thead>
+        <tbody class="divide-y divide-slate-100">
+          <tr><td class="py-3 px-3 font-semibold">Flow Meter</td><td class="py-3 px-3 text-slate-600">Membrane/thermal, 0.1–5 m³/hr</td><td class="py-3 px-3 text-slate-600">Daily gas volume</td><td class="py-3 px-3 text-right mono">$60</td></tr>
+          <tr><td class="py-3 px-3 font-semibold">Pressure Sensor</td><td class="py-3 px-3 text-slate-600">0–50 kPa, 4–20 mA</td><td class="py-3 px-3 text-slate-600">Leak detection</td><td class="py-3 px-3 text-right mono">$25</td></tr>
+          <tr><td class="py-3 px-3 font-semibold">Temperature Probe</td><td class="py-3 px-3 text-slate-600">PT100, 0–100 °C</td><td class="py-3 px-3 text-slate-600">Digester health</td><td class="py-3 px-3 text-right mono">$15</td></tr>
+          <tr><td class="py-3 px-3 font-semibold">CH₄ Analyzer</td><td class="py-3 px-3 text-slate-600">NDIR, 0–100%, ±3% FS</td><td class="py-3 px-3 text-slate-600">Methane fraction + mitigation verification</td><td class="py-3 px-3 text-right mono">$75</td></tr>
+          <tr><td class="py-3 px-3 font-semibold">MCU + LoRa</td><td class="py-3 px-3 text-slate-600">ESP32 + SX1276</td><td class="py-3 px-3 text-slate-600">Processing + transmission</td><td class="py-3 px-3 text-right mono">$50</td></tr>
+          <tr><td class="py-3 px-3 font-semibold">Solar + Battery</td><td class="py-3 px-3 text-slate-600">3W panel + 18650</td><td class="py-3 px-3 text-slate-600">Power</td><td class="py-3 px-3 text-right mono">$35</td></tr>
+          <tr><td class="py-3 px-3 font-semibold">Enclosure</td><td class="py-3 px-3 text-slate-600">IP66 ABS, hurricane-rated mounting</td><td class="py-3 px-3 text-slate-600">Weatherproofing</td><td class="py-3 px-3 text-right mono">$40</td></tr>
+          <tr class="bg-cyan-50"><td class="py-3 px-3 font-bold" colspan="3">TOTAL per unit</td><td class="py-3 px-3 text-right mono font-bold text-cyan-700">$300</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <p class="text-[11px] text-slate-500 mt-3">Connectivity note: St. Lucia has stronger mobile coverage than rural Haiti, but LoRaWAN remains preferred for low-power, wide-area telemetry. GSM fallback retained for sites without LoRaWAN gateways.</p>
+  </div>
+
+  <div class="card p-6">
+    <div class="flex justify-between items-center mb-4">
+      <h3 class="text-sm font-bold text-slate-800">Live Sensor Simulation</h3>
+      <span class="text-[10px] text-slate-400 mono">Updates every 2 seconds</span>
+    </div>
+    <div class="grid md:grid-cols-4 gap-4 mb-5">
+      <div class="bg-slate-50 border border-slate-200 rounded-xl p-4 text-center"><p class="text-[10px] text-slate-500 uppercase tracking-widest font-bold mb-1">Flow</p><p id="simFlow" class="mono text-xl font-black text-slate-900">0.00</p><p class="text-[9px] text-slate-400 mt-0.5">m³/h</p></div>
+      <div class="bg-slate-50 border border-slate-200 rounded-xl p-4 text-center"><p class="text-[10px] text-slate-500 uppercase tracking-widest font-bold mb-1">Pressure</p><p id="simPressure" class="mono text-xl font-black text-slate-900">0.00</p><p class="text-[9px] text-slate-400 mt-0.5">kPa</p></div>
+      <div class="bg-slate-50 border border-slate-200 rounded-xl p-4 text-center"><p class="text-[10px] text-slate-500 uppercase tracking-widest font-bold mb-1">Temperature</p><p id="simTemp" class="mono text-xl font-black text-slate-900">0.0</p><p class="text-[9px] text-slate-400 mt-0.5">°C</p></div>
+      <div class="bg-cyan-50 border-2 border-cyan-200 rounded-xl p-4 text-center"><p class="text-[10px] text-cyan-700 uppercase tracking-widest font-bold mb-1">CH₄</p><p id="simCH4" class="mono text-xl font-black text-cyan-700">0.0</p><p class="text-[9px] text-cyan-600 mt-0.5">%</p></div>
+    </div>
+    <div class="h-56"><canvas id="chartLiveSensors"></canvas></div>
+  </div>
+</section>
+
+<!-- ═══════════════════════ TAB: CARBON ═══════════════════════ -->
+<section id="tab-carbon" class="tab-panel hidden fade-in space-y-6">
+  <div class="grid md:grid-cols-3 gap-4">
+    <div class="card p-5 text-center"><p class="text-[10px] text-slate-500 uppercase tracking-widest font-bold mb-2">Per Unit / Year</p><p class="mono text-3xl font-black text-cyan-700">2.24</p><p class="text-xs text-slate-500 mt-1">tCO₂e avoided</p></div>
+    <div class="card p-5 text-center"><p class="text-[10px] text-slate-500 uppercase tracking-widest font-bold mb-2">500 Units</p><p class="mono text-3xl font-black text-blue-700">1,120</p><p class="text-xs text-slate-500 mt-1">tCO₂e/year</p></div>
+    <div class="card p-5 text-center"><p class="text-[10px] text-slate-500 uppercase tracking-widest font-bold mb-2">Annual Credit Value</p><p class="mono text-3xl font-black text-amber-700">$20K</p><p class="text-xs text-slate-500 mt-1">@ $18/tCO₂e</p></div>
+  </div>
+
+  <div class="card p-6">
+    <h3 class="text-sm font-bold text-slate-800 mb-4">Calculation Methodology — Gold Standard ACDM</h3>
+    <div class="bg-slate-900 text-cyan-300 rounded-xl p-5 mono text-[11px] leading-relaxed overflow-x-auto">
+<span style="color:#64748b">// Pathway 1 — Methane Avoidance from Organic Waste Diversion (ACDM)</span>
+ER_CH4_avoided = Waste_organic × MCF × DOC × DOCf × F × 16/12 × GWP_CH4
+
+<span style="color:#64748b">// Pathway 2 — Synthetic Fertilizer Displacement</span>
+ER_fertilizer = Slurry_output × EF_fertilizer × fNRB
+
+<span style="color:#64748b">// Total Annual Emission Reduction</span>
+ER_total = (ER_CH4_avoided + ER_fertilizer) × (1 − Leakage)
+
+<span style="color:#64748b">// Default parameters (St. Lucia):</span>
+MCF = 0.8 (managed landfill), DOC = 0.15 (food waste),
+DOCf = 0.5, F = 0.5, GWP_CH4 = 28 (AR5), Leakage = 10% default
+
+<span style="color:#64748b">// Sample (1 tonne organic waste diverted per year):</span>
+ER_CH4 = 1.0 × 0.8 × 0.15 × 0.5 × 0.5 × 1.333 × 28
+       ≈ 1.12 tCO₂e/tonne diverted
+
+<span style="color:#64748b">// Household diverting 2 tonnes/year:</span>
+→ <span style="color:#67e8f9;font-weight:bold">ER_total ≈ 2.24 tCO₂e/unit/year</span>
+    </div>
+  </div>
+
+  <div class="card p-6">
+    <h3 class="text-sm font-bold text-slate-800 mb-4">Default Parameters (St. Lucia)</h3>
+    <table class="w-full text-xs">
+      <thead><tr class="bg-slate-50 text-slate-600 uppercase tracking-wider text-[10px]"><th class="text-left py-3 px-3 font-bold border-b">Parameter</th><th class="text-left py-3 px-3 font-bold border-b">Value</th><th class="text-left py-3 px-3 font-bold border-b">Source</th></tr></thead>
+      <tbody class="divide-y divide-slate-100">
+        <tr><td class="py-3 px-3 font-semibold">Organic waste landfilled</td><td class="py-3 px-3 mono">~38,800 t/year</td><td class="py-3 px-3 text-slate-500">CIA World Factbook / SLSWMA</td></tr>
+        <tr><td class="py-3 px-3 font-semibold">MCF (managed landfill)</td><td class="py-3 px-3 mono">0.8</td><td class="py-3 px-3 text-slate-500">IPCC 2006</td></tr>
+        <tr><td class="py-3 px-3 font-semibold">DOC (food waste)</td><td class="py-3 px-3 mono">0.15</td><td class="py-3 px-3 text-slate-500">IPCC 2006</td></tr>
+        <tr><td class="py-3 px-3 font-semibold">DOCf</td><td class="py-3 px-3 mono">0.5</td><td class="py-3 px-3 text-slate-500">IPCC 2006</td></tr>
+        <tr><td class="py-3 px-3 font-semibold">F (CH₄ fraction in landfill gas)</td><td class="py-3 px-3 mono">0.5</td><td class="py-3 px-3 text-slate-500">IPCC 2006</td></tr>
+        <tr><td class="py-3 px-3 font-semibold">GWP_CH₄ (100-yr)</td><td class="py-3 px-3 mono">28</td><td class="py-3 px-3 text-slate-500">IPCC AR5</td></tr>
+        <tr><td class="py-3 px-3 font-semibold">Leakage (default)</td><td class="py-3 px-3 mono">10%</td><td class="py-3 px-3 text-slate-500">Gold Standard</td></tr>
+        <tr><td class="py-3 px-3 font-semibold">Leakage (sensor dMRV)</td><td class="py-3 px-3 mono">1–3%</td><td class="py-3 px-3 text-slate-500">dMRV pilot data</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="card p-6 bg-gradient-to-br from-cyan-50 to-blue-50 border-2 border-cyan-300">
+    <div class="text-[10px] font-bold text-cyan-700 uppercase tracking-widest mb-2">Policy Alignment</div>
+    <p class="text-sm text-slate-800 leading-relaxed">This methodology directly supports St. Lucia's <strong>Global Methane Pledge</strong> commitment and its <strong>NDC 3.0</strong> targets: 14.7% emissions reduction in the energy and transport sector by 2030, rising to 22% by 2035. Waste-sector methane is one of the few emissions streams the island can address domestically, at scale, with existing technology.</p>
+  </div>
+</section>
+
+<!-- ═══════════════════════ TAB: WORKFLOW ═══════════════════════ -->
+<section id="tab-workflow" class="tab-panel hidden fade-in space-y-6">
+  <div class="card p-6">
+    <h3 class="text-sm font-bold text-slate-800 mb-4">End-to-End Program Workflow</h3>
+    <div class="workflow">╔══════════════════════════════════════════════════════════════════╗
+║ PHASE 0 — APPLICATION (Oct 2026)                                ║
+╚══════════════════════════════════════════════════════════════════╝
+
+  Engage Recycle ──▶ Sign SP ──▶ Prepare Docs ──▶ Submit ──▶ Pitch
+  Organics + SLSWMA   Letters       Pitch + Budget   App      Nov 23-24
+      │                │                │            │          │
+      ▼                ▼                ▼            ▼          ▼
+  SALCC Farm       SP1 + SP2        Deck + BOM   Bridge for   Jury
+  Hotel partner    engagement       + VVB pack   Billions
+                                                          │
+                                                          ▼
+                                                Award (Nov 30, 2026)
+
+╔══════════════════════════════════════════════════════════════════╗
+║ PHASE 1 — DESIGN (Dec 2026 – Jan 2027)                          ║
+╚══════════════════════════════════════════════════════════════════╝
+
+  ┌──────────────┐    ┌──────────────┐    ┌──────────────┐
+  │ DIGESTER     │    │ SENSOR DESIGN│    │PLATFORM PREP │
+  │ DESIGN       │    │              │    │              │
+  ├──────────────┤    ├──────────────┤    ├──────────────┤
+  │ CAD drawings │    │ Schematic    │    │ API schema   │
+  │ Co-digestion │    │ PCB layout   │    │ ACDM engine  │
+  │ spec         │    │ BOM locked   │    │ Rule engine  │
+  └──────┬───────┘    └──────┬───────┘    └──────┬───────┘
+         └────────────┬──────┴────────────┬──────┘
+                      ▼                   ▼
+              ┌─────────────┐     ┌─────────────┐
+              │ SP1 Contract│     │ SP2 Contract│
+              └─────────────┘     └─────────────┘
+
+╔══════════════════════════════════════════════════════════════════╗
+║ PHASE 2 — BUILD (Feb – Mar 2027)                                ║
+╚══════════════════════════════════════════════════════════════════╝
+
+  SP1 (Fabricator)                SP2 (IoT Developer)
+  ┌───────────────────┐          ┌───────────────────┐
+  │ Fabricate Unit 1  │          │ Firmware v1       │
+  │ Fabricate Unit 2  │          │ Bench test        │
+  │ Fabricate Unit 3  │          │ Gateway assembly  │
+  │ Pressure + water  │          │ Cloud integration │
+  │ tests             │          │                   │
+  └─────────┬─────────┘          └─────────┬─────────┘
+            └──────────────┬───────────────┘
+                           ▼
+                  ┌────────────────┐
+                  │ INTEGRATION    │
+                  │ Digester + IoT │
+                  └────────┬───────┘
+
+╔══════════════════════════════════════════════════════════════════╗
+║ PHASE 3 — FIELD DEPLOYMENT (Apr 2027)                           ║
+╚══════════════════════════════════════════════════════════════════╝
+
+  SALCC Farm            Hotel Partner          Household
+  ┌───────────────┐    ┌───────────────┐    ┌───────────────┐
+  │ Site prep     │    │ Site prep     │    │ Site prep     │
+  │ Install       │    │ Install       │    │ Install       │
+  │ Sensors       │    │ Sensors       │    │ Sensors       │
+  │ Training      │    │ Staff training│    │ Training      │
+  │ 4-wk monitor  │    │ 4-wk monitor  │    │ 4-wk monitor  │
+  └───────┬───────┘    └───────┬───────┘    └───────┬───────┘
+          └────────────────────┼────────────────────┘
+                               ▼
+                  ┌────────────────────────┐
+                  │  LIVE DATA → GCFT      │
+                  │  (2-second interval)   │
+                  └────────────────────────┘
+
+╔══════════════════════════════════════════════════════════════════╗
+║ PHASE 4 — ANALYSIS (May 2027)                                   ║
+╚══════════════════════════════════════════════════════════════════╝
+
+  ┌───────────────┐  ┌───────────────┐  ┌───────────────┐
+  │ Performance   │  │ Carbon Yield  │  │ Documentation │
+  │ Flow accuracy │  │ tCO₂e/unit/yr │  │ VVB dossier   │
+  │ Uptime        │  │ Credit value  │  │ Datasheets    │
+  │ Power usage   │  │ Uncertainty   │  │ SOPs          │
+  └───────┬───────┘  └───────┬───────┘  └───────┬───────┘
+          └──────────────────┼──────────────────┘
+                             ▼
+                ┌──────────────────────────┐
+                │ DEMO DAY + INVESTOR PITCH│
+                └──────────────────────────┘
+
+╔══════════════════════════════════════════════════════════════════╗
+║ PHASE 5 — SCALE-UP (2027+)                                      ║
+╚══════════════════════════════════════════════════════════════════╝
+
+   200 units      ──▶   500 units    ──▶   2,000 units  ──▶ Regional
+   (2028)              (2029)              (2031)            (2033+)
+
+   GCF Readiness       CDB Loan            Green Bond        Grenada
+   Carbon Pre-Fin      IDB Invest          Article 6.2       St. Vincent
+                                                             Dominica
+                                                             Antigua</div>
+  </div>
+
+  <div class="card p-6">
+    <h3 class="text-sm font-bold text-slate-800 mb-4">Data Flow — Waste to Credit</h3>
+    <div class="workflow">┌──────────────────────────────────────────────────────────────┐
+│              SITE (household / farm / hotel)                 │
+│  Organic waste (20-60 kg/day) ──▶ Digester (2-4 m³, 35°C)    │
+│                                    │                          │
+│                                    ▼                          │
+│                           Biogas (0.5-2.0 m³/day, 60% CH₄)   │
+│                                    │                          │
+│       ┌────────────────────────────┼──────────────────────┐   │
+│       ▼                            ▼                      ▼   │
+│   Cookstove                   Gas Holder             Bio-slurry│
+│       │                            │                  Fertilizer│
+│       └────────────────┬───────────┘                      │   │
+│                        ▼                                  │   │
+│           ┌────────────────────────┐                      │   │
+│           │ SENSOR CLUSTER         │◀─────────────────────┘   │
+│           │ Flow·Pressure·Temp·CH₄ │                          │
+│           └───────────┬────────────┘                          │
+│                       ▼                                       │
+│              ESP32 + LoRaWAN Gateway                          │
+│              (Solar + Battery, IP66)                          │
+└──────────────────────────┬───────────────────────────────────┘
+                           │ AES-128 / TLS 1.3
+                           ▼
+┌──────────────────────────────────────────────────────────────┐
+│              GCFT CLOUD PLATFORM                             │
+│  Ingestion → Validation → ACDM Calc → Ledger → Registry      │
+└──────────────────────────┬───────────────────────────────────┘
+                           │
+           ┌───────────────┼───────────────┐
+           ▼               ▼               ▼
+       Household        Investor          VVB
+       (SMS/WhatsApp)   (Dashboard)       (Audit)</div>
+  </div>
+</section>
+
+<!-- ═══════════════════════ TAB: COMPETITIVE ═══════════════════════ -->
+<section id="tab-competitive" class="tab-panel hidden fade-in space-y-6">
+  <div class="card p-6">
+    <div class="text-[10px] font-bold text-cyan-600 uppercase tracking-widest mb-2">Benchmark Analysis</div>
+    <h3 class="text-lg font-black text-slate-900 mb-2">Competitive Landscape</h3>
+    <p class="text-sm text-slate-600">Three reference points define the St. Lucia opportunity: an active Canadian-funded organics programme, a mature global prefabricated digester market, and a Jamaican social enterprise proving hotel/farm biogas. None combines IoT dMRV with carbon-market access in the Eastern Caribbean. This is the gap BiogasSTLucia fills.</p>
+  </div>
+
+  <div class="grid md:grid-cols-3 gap-4">
+    <div class="card p-5">
+      <div class="flex items-center gap-2 mb-3">
+        <span class="text-2xl">🇱🇨</span>
+        <div><div class="text-[10px] font-bold text-slate-500 uppercase tracking-wider">Reference 1</div><div class="text-sm font-bold text-slate-900">Recycle Organics (St. Lucia)</div></div>
+      </div>
+      <div class="space-y-2 text-xs text-slate-600">
+        <div class="flex justify-between py-1.5 border-b border-slate-100"><span class="text-slate-500">Launch</span><span class="mono font-bold">2023</span></div>
+        <div class="flex justify-between py-1.5 border-b border-slate-100"><span class="text-slate-500">Units</span><span class="mono font-bold">21 farmers + 2 SALCC</span></div>
+        <div class="flex justify-between py-1.5 border-b border-slate-100"><span class="text-slate-500">Unit cost</span><span class="mono font-bold">$500–900</span></div>
+        <div class="flex justify-between py-1.5 border-b border-slate-100"><span class="text-slate-500">Funding</span><span class="mono font-bold">$8M CAD</span></div>
+        <div class="flex justify-between py-1.5"><span class="text-slate-500">Monitoring</span><span class="mono font-bold text-red-600">Manual</span></div>
+      </div>
+      <a href="https://recycleorganics.org" target="_blank" class="mt-3 inline-block text-[10px] text-cyan-700 font-bold hover:underline">recycleorganics.org →</a>
+    </div>
+
+    <div class="card p-5">
+      <div class="flex items-center gap-2 mb-3">
+        <span class="text-2xl">🌎</span>
+        <div><div class="text-[10px] font-bold text-slate-500 uppercase tracking-wider">Reference 2</div><div class="text-sm font-bold text-slate-900">HomeBiogas</div></div>
+      </div>
+      <div class="space-y-2 text-xs text-slate-600">
+        <div class="flex justify-between py-1.5 border-b border-slate-100"><span class="text-slate-500">Launch</span><span class="mono font-bold">2012</span></div>
+        <div class="flex justify-between py-1.5 border-b border-slate-100"><span class="text-slate-500">Reach</span><span class="mono font-bold">100,000+ units</span></div>
+        <div class="flex justify-between py-1.5 border-b border-slate-100"><span class="text-slate-500">Unit cost</span><span class="mono font-bold">$500–900</span></div>
+        <div class="flex justify-between py-1.5 border-b border-slate-100"><span class="text-slate-500">Feedstock</span><span class="mono font-bold">Food + manure</span></div>
+        <div class="flex justify-between py-1.5"><span class="text-slate-500">Monitoring</span><span class="mono font-bold text-red-600">None / basic</span></div>
+      </div>
+      <a href="https://homebiogas.com" target="_blank" class="mt-3 inline-block text-[10px] text-cyan-700 font-bold hover:underline">homebiogas.com →</a>
+    </div>
+
+    <div class="card p-5">
+      <div class="flex items-center gap-2 mb-3">
+        <span class="text-2xl">🇯🇲</span>
+        <div><div class="text-[10px] font-bold text-slate-500 uppercase tracking-wider">Reference 3</div><div class="text-sm font-bold text-slate-900">CaribShare Biogas (Jamaica)</div></div>
+      </div>
+      <div class="space-y-2 text-xs text-slate-600">
+        <div class="flex justify-between py-1.5 border-b border-slate-100"><span class="text-slate-500">Launch</span><span class="mono font-bold">2015</span></div>
+        <div class="flex justify-between py-1.5 border-b border-slate-100"><span class="text-slate-500">Units</span><span class="mono font-bold">~10 (hotel/farm)</span></div>
+        <div class="flex justify-between py-1.5 border-b border-slate-100"><span class="text-slate-500">Model</span><span class="mono font-bold">Social enterprise</span></div>
+        <div class="flex justify-between py-1.5 border-b border-slate-100"><span class="text-slate-500">Feedstock</span><span class="mono font-bold">Hotel/farm organic</span></div>
+        <div class="flex justify-between py-1.5"><span class="text-slate-500">Monitoring</span><span class="mono font-bold text-red-600">Manual</span></div>
+      </div>
+      <a href="https://caribshare.com" target="_blank" class="mt-3 inline-block text-[10px] text-cyan-700 font-bold hover:underline">caribshare.com →</a>
+    </div>
+  </div>
+
+  <div class="card p-6">
+    <h3 class="text-sm font-bold text-slate-800 mb-4">Comparative Analysis Matrix</h3>
+    <div class="overflow-x-auto">
+      <table class="comp-table w-full">
+        <thead>
+          <tr>
+            <th>Dimension</th>
+            <th>Recycle Organics (SLU)</th>
+            <th>HomeBiogas</th>
+            <th>CaribShare (JAM)</th>
+            <th style="background:#0e7490;">BiogasSTLucia</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr><td><strong>Launch</strong></td><td>2023</td><td>2012</td><td>2015</td><td style="background:#ecfeff;font-weight:800;">2027</td></tr>
+          <tr><td><strong>Units deployed</strong></td><td>21 + 2</td><td>100,000+</td><td>~10</td><td style="background:#ecfeff;font-weight:800;">3 (Phase 1)</td></tr>
+          <tr><td><strong>Unit cost</strong></td><td>$500–900</td><td>$500–900</td><td>Custom</td><td style="background:#ecfeff;font-weight:800;">$900</td></tr>
+          <tr><td><strong>Monitoring</strong></td><td style="color:#b91c1c;">Manual</td><td style="color:#b91c1c;">None / basic</td><td style="color:#b91c1c;">Manual</td><td style="background:#ecfeff;font-weight:800;color:#0e7490;">Full IoT dMRV</td></tr>
+          <tr><td><strong>Carbon standard</strong></td><td style="color:#b91c1c;">None</td><td style="color:#b91c1c;">None</td><td style="color:#b91c1c;">None</td><td style="background:#ecfeff;font-weight:800;">GS ACDM</td></tr>
+          <tr><td><strong>Registries</strong></td><td style="color:#b91c1c;">0</td><td style="color:#b91c1c;">0</td><td style="color:#b91c1c;">0</td><td style="background:#ecfeff;font-weight:800;color:#0e7490;">3</td></tr>
+          <tr><td><strong>Credit volume</strong></td><td style="color:#b91c1c;">0</td><td style="color:#b91c1c;">0</td><td style="color:#b91c1c;">0</td><td style="background:#ecfeff;font-weight:800;">1,120 t/yr (500 units)</td></tr>
+          <tr><td><strong>Total financing</strong></td><td>$8M CAD</td><td>Commercial</td><td>Social enterprise</td><td style="background:#ecfeff;font-weight:800;">$8.2M</td></tr>
+          <tr><td><strong>Co-finance ratio</strong></td><td>Grant-only</td><td>Self-funded</td><td>Self-funded</td><td style="background:#ecfeff;font-weight:800;">1:1.13 → 1:2.5</td></tr>
+          <tr><td><strong>Commercial by Y4</strong></td><td style="color:#b45309;">Partial</td><td style="color:#047857;font-weight:800;">Yes</td><td style="color:#047857;font-weight:800;">Yes</td><td style="background:#ecfeff;font-weight:800;color:#0e7490;">Yes</td></tr>
+          <tr><td><strong>Article 6.2 ready</strong></td><td style="color:#b91c1c;">No</td><td style="color:#b91c1c;">No</td><td style="color:#b91c1c;">No</td><td style="background:#ecfeff;font-weight:800;color:#0e7490;">Yes</td></tr>
+          <tr><td><strong>Open-source IP</strong></td><td style="color:#b91c1c;">No</td><td style="color:#b91c1c;">No</td><td style="color:#b91c1c;">No</td><td style="background:#ecfeff;font-weight:800;color:#0e7490;">Yes (GPL/CC)</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <div class="card p-6">
+    <h3 class="text-sm font-bold text-slate-800 mb-4">Gap-Closing Commitments</h3>
+    <div class="grid md:grid-cols-2 gap-3">
+      <div class="bg-cyan-50 border border-cyan-200 rounded-lg p-4"><div class="text-[10px] font-bold text-cyan-700 uppercase tracking-wider mb-1">Gap 1 — Digital MRV</div><div class="text-xs text-slate-700">Benchmark: <strong>Manual monitoring (Recycle Organics)</strong><br>Commitment: <strong>IoT + dMRV from Day 1, 2-second telemetry</strong></div></div>
+      <div class="bg-cyan-50 border border-cyan-200 rounded-lg p-4"><div class="text-[10px] font-bold text-cyan-700 uppercase tracking-wider mb-1">Gap 2 — Carbon Market Access</div><div class="text-xs text-slate-700">Benchmark: <strong>No active St. Lucia biogas carbon project</strong><br>Commitment: <strong>GS ACDM registration by Q1 2028</strong></div></div>
+      <div class="bg-cyan-50 border border-cyan-200 rounded-lg p-4"><div class="text-[10px] font-bold text-cyan-700 uppercase tracking-wider mb-1">Gap 3 — Hotel Sector Integration</div><div class="text-xs text-slate-700">Benchmark: <strong>Hotels outside Recycle Organics scope</strong><br>Commitment: <strong>1 hotel partner in Phase 1, 25 by Year 3</strong></div></div>
+      <div class="bg-cyan-50 border border-cyan-200 rounded-lg p-4"><div class="text-[10px] font-bold text-cyan-700 uppercase tracking-wider mb-1">Gap 4 — Regional Transferability</div><div class="text-xs text-slate-700">Benchmark: <strong>St. Lucia-only programmes</strong><br>Commitment: <strong>OECS replication playbook by Year 4</strong></div></div>
+      <div class="bg-cyan-50 border border-cyan-200 rounded-lg p-4"><div class="text-[10px] font-bold text-cyan-700 uppercase tracking-wider mb-1">Gap 5 — Anchor Investor</div><div class="text-xs text-slate-700">Benchmark: <strong>Grant-only funding (Recycle Organics)</strong><br>Commitment: <strong>Secure DFI anchor (IDB Invest / BII) by Q2 2027</strong></div></div>
+      <div class="bg-cyan-50 border border-cyan-200 rounded-lg p-4"><div class="text-[10px] font-bold text-cyan-700 uppercase tracking-wider mb-1">Gap 6 — Contractor Network</div><div class="text-xs text-slate-700">Benchmark: <strong>Limited local fabrication capacity</strong><br>Commitment: <strong>Train 40 masons + technicians by Year 2</strong></div></div>
+    </div>
+  </div>
+
+  <div class="card p-6">
+    <h3 class="text-sm font-bold text-slate-800 mb-4">Competitive Advantages — Unique to BiogasSTLucia</h3>
+    <div class="grid md:grid-cols-2 gap-4">
+      <div class="flex gap-3 p-4 bg-gradient-to-br from-cyan-50 to-white border-2 border-cyan-300 rounded-xl">
+        <span class="text-2xl">📡</span>
+        <div><div class="text-xs font-bold text-cyan-700 uppercase tracking-wider">Digital MRV by Design</div><div class="text-[11px] text-slate-600 mt-1">2-second IoT telemetry vs. manual inspections (Recycle Organics) and no monitoring (HomeBiogas)</div></div>
+      </div>
+      <div class="flex gap-3 p-4 bg-gradient-to-br from-blue-50 to-white border-2 border-blue-300 rounded-xl">
+        <span class="text-2xl">🔗</span>
+        <div><div class="text-xs font-bold text-blue-700 uppercase tracking-wider">3-Registry Integration</div><div class="text-[11px] text-slate-600 mt-1">Verra + Gold Standard + Puro.earth — no Caribbean benchmark has more than 0</div></div>
+      </div>
+      <div class="flex gap-3 p-4 bg-gradient-to-br from-amber-50 to-white border-2 border-amber-300 rounded-xl">
+        <span class="text-2xl">📜</span>
+        <div><div class="text-xs font-bold text-amber-700 uppercase tracking-wider">Methane Pledge Alignment</div><div class="text-[11px] text-slate-600 mt-1">Directly supports St. Lucia's Global Methane Pledge commitment and NDC 3.0 waste-sector targets</div></div>
+      </div>
+      <div class="flex gap-3 p-4 bg-gradient-to-br from-purple-50 to-white border-2 border-purple-300 rounded-xl">
+        <span class="text-2xl">🌍</span>
+        <div><div class="text-xs font-bold text-purple-700 uppercase tracking-wider">Article 6.2 Ready</div><div class="text-[11px] text-slate-600 mt-1">CA ledger + NDA engagement + double-counting guard from Day 1</div></div>
+      </div>
+      <div class="flex gap-3 p-4 bg-gradient-to-br from-sky-50 to-white border-2 border-sky-300 rounded-xl">
+        <span class="text-2xl">🌊</span>
+        <div><div class="text-xs font-bold text-sky-700 uppercase tracking-wider">SIDS-Specific Design</div><div class="text-[11px] text-slate-600 mt-1">Hurricane-rated, IP66, tropical operating range — designed for the Eastern Caribbean</div></div>
+      </div>
+      <div class="flex gap-3 p-4 bg-gradient-to-br from-slate-50 to-white border-2 border-slate-300 rounded-xl">
+        <span class="text-2xl">🔓</span>
+        <div><div class="text-xs font-bold text-slate-700 uppercase tracking-wider">Open-Source IP</div><div class="text-[11px] text-slate-600 mt-1">GNU GPL v3 firmware + CC-BY hardware — removes vendor lock-in</div></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="card p-6 bg-gradient-to-br from-cyan-50 to-blue-50 border-2 border-cyan-300">
+    <div class="text-[10px] font-bold text-cyan-700 uppercase tracking-widest mb-2">Positioning</div>
+    <p class="text-sm text-slate-800 leading-relaxed"><strong>BiogasSTLucia does not compete with Recycle Organics, HomeBiogas, or CaribShare.</strong> It fills a gap none of them address: an SIDS-specific, IoT-monitored, multi-registry organic waste-to-energy program designed for carbon-market access from Day 1. Where Recycle Organics proved biogas works for St. Lucian farmers, and HomeBiogas proved prefabricated digesters scale globally, BiogasSTLucia proves the combination — digital verification + carbon finance + hotel-sector integration — works in a hurricane-exposed, tourism-dependent, LDC island context, with transferability to 14 other CARICOM states.</p>
+  </div>
+</section>
+
+<!-- ═══════════════════════ TAB: LETTERS ═══════════════════════ -->
+<section id="tab-letters" class="tab-panel hidden fade-in space-y-6">
+  <div class="card p-6">
+    <div class="flex justify-between items-center mb-4 flex-wrap gap-2">
+      <div>
+        <h3 class="text-sm font-bold text-slate-800">Service Provider 1 — Letter of Engagement</h3>
+        <p class="text-xs text-slate-500 mt-1">For the digester fabricator — USD 8,000</p>
+      </div>
+      <span class="text-[10px] bg-cyan-100 text-cyan-700 px-2 py-1 rounded font-bold">FABRICATOR</span>
+    </div>
+    <div class="letter-block">════════════════════════════════════════════════════════════
+   LETTER OF ENGAGEMENT — SERVICE PROVIDER 1 (FABRICATOR)
+════════════════════════════════════════════════════════════
+
+Date: [Insert date]
+To: Conecta Caribbean Prototype Grant Selection Committee
+    Bridge for Billions
+
+Re: Letter of Engagement — Prototype Fabrication Services
+    Venture: BiogasSTLucia (Recycle Organics × GCFT Platform)
+    Service Provider: [Fabricator Legal Name]
+    Prototype: Modular Anaerobic Digester (2–4 m³, organic waste)
+
+────────────────────────────────────────────────────────────
+
+This letter confirms that [FABRICATOR LEGAL NAME], registered in
+Saint Lucia with tax ID [TIN], hereby commits to serve as Service
+Provider for the fabrication component.
+
+1. SCOPE OF WORK (Feb 2027 – May 2027)
+
+   a) Detailed fabrication drawings for a 2 m³ dome-type
+      ferrocement anaerobic digester optimized for co-digestion
+      of food waste, manure, and green waste, including:
+        • Digester body and dome geometry
+        • Inlet (150 mm) and outlet (100 mm)
+        • Gas holder interface
+        • Reinforcement layout (mesh + rebar)
+        • Water-tight and gas-tight sealing specification
+        • Feedstock mixing and pre-treatment chamber
+
+   b) Three (3) complete physical digesters, including:
+        • Digester body and dome (25 mm wall thickness)
+        • Inlet pipe assembly
+        • Outlet/overflow chamber (50 L)
+        • Gas holder dome or HDPE interface
+        • Gas outlet pipe + valve (12 mm)
+        • Bio-slurry outlet (100 mm PVC)
+        • All masonry, cement, and finishing work
+
+   c) On-site installation at three pilot sites:
+        • Sir Arthur Lewis Community College (SALCC) Farm
+        • One hotel partner (to be confirmed)
+        • One household / small farm beneficiary
+
+   d) Fabrication documentation package:
+        • As-built drawings
+        • Material specifications
+        • QC records (mix, cure, pressure tests)
+        • O&M manual (English, French Creole)
+
+2. TIMELINE
+
+   Month 1 (Feb 2027) ......... Fabrication drawings approved
+   Month 2 (Mar 2027) ......... Units 1 and 2 fabricated
+   Month 3 (Apr 2027) ......... Unit 3 fabricated
+   Month 4 (May 2027) ......... All three installed and commissioned
+
+3. FEE AND PAYMENT
+
+   Total fee: USD 8,000
+
+   • 30% upon contract signature ......... USD 2,400
+   • 40% upon fabrication milestone ...... USD 3,200
+   • 30% upon commissioning acceptance ... USD 2,400
+
+   All payments made by Bridge for Billions directly to
+   [FABRICATOR NAME] upon milestone certification.
+
+4. QUALITY ASSURANCE
+
+   [FABRICATOR NAME] warrants:
+     • All work performed per drawings and specifications
+     • Materials meet or exceed Saint Lucia building standards
+     • Each digester passes 24-hour gas-tightness test at 5 kPa min
+     • Each digester passes 24-hour water-tightness test
+     • 12-month workmanship warranty
+
+5. INTELLECTUAL PROPERTY
+
+   All design drawings, specifications, and documentation shall
+   be joint property of Recycle Organics and GCFT Platform, with
+   perpetual royalty-free license to BiogasSTLucia.
+
+6. REPORTING
+
+   Weekly progress reports to BiogasSTLucia project lead.
+
+7. CONFIDENTIALITY
+
+   Standard mutual NDA terms apply.
+
+Sincerely,
+
+_________________________________
+[Name], [Title]
+[FABRICATOR LEGAL NAME]
+
+Countersigned on behalf of BiogasSTLucia:
+
+_________________________________
+[Project Lead], Founder
+BiogasSTLucia
+
+_________________________________
+[GCFT Lead Name]
+GCFT Platform
+
+════════════════════════════════════════════════════════════</div>
+  </div>
+
+  <div class="card p-6">
+    <div class="flex justify-between items-center mb-4 flex-wrap gap-2">
+      <div>
+        <h3 class="text-sm font-bold text-slate-800">Service Provider 2 — Letter of Engagement</h3>
+        <p class="text-xs text-slate-500 mt-1">For the IoT sensor developer — USD 9,000</p>
+      </div>
+      <span class="text-[10px] bg-blue-100 text-blue-700 px-2 py-1 rounded font-bold">IoT DEVELOPER</span>
+    </div>
+    <div class="letter-block">════════════════════════════════════════════════════════════
+   LETTER OF ENGAGEMENT — SERVICE PROVIDER 2 (IoT DEVELOPER)
+════════════════════════════════════════════════════════════
+
+Date: [Insert date]
+To: Conecta Caribbean Prototype Grant Selection Committee
+    Bridge for Billions
+
+Re: Letter of Engagement — IoT Sensor & Gateway Development
+    Venture: BiogasSTLucia (Recycle Organics × GCFT Platform)
+    Service Provider: [IoT Developer Legal Name]
+    Prototype: Anaerobic Digester Monitoring System
+
+────────────────────────────────────────────────────────────
+
+This letter confirms that [IOT DEVELOPER LEGAL NAME], registered
+in [country] with tax ID [TIN], hereby commits to serve as Service
+Provider for the IoT hardware and firmware development.
+
+1. SCOPE OF WORK (Feb 2027 – May 2027)
+
+   a) Sensor hardware design:
+        • Schematic and PCB layout for sensor interface board
+        • Integration of 4 sensors:
+           1. Biogas flow meter (membrane or thermal mass)
+           2. Pressure sensor (0–50 kPa, 4–20 mA)
+           3. Temperature probe (PT100, 0–100 °C)
+           4. NDIR CH₄ analyzer (0–100%, ±3% accuracy)
+        • ESP32 microcontroller + LoRaWAN SX1276 module
+        • 3W solar panel + 18650 battery power subsystem
+        • IP66-rated enclosure with DIN rail mounting
+        • Hurricane-rated mounting bracket
+
+   b) Firmware development:
+        • Sensor polling and data validation
+        • Local buffering (minimum 30 days offline)
+        • LoRaWAN uplink with AES-128 encryption
+        • GSM fallback for areas without LoRaWAN coverage
+        • OTA firmware update capability
+        • Power management for 4–6 weeks autonomy
+
+   c) Gateway and cloud integration:
+        • LoRaWAN gateway specification
+        • Provisioning and device management platform
+        • REST API integration with GCFT cloud platform
+        • JSON payload schema matching GCFT standard
+        • Webhook signing (SHA-256) for audit integrity
+
+   d) Testing and validation:
+        • Bench testing of all sensor channels
+        • 4-week field trial with live data streaming
+        • Performance report (accuracy, reliability, power)
+
+   e) Documentation:
+        • Hardware schematics and BOM
+        • Firmware repository with build instructions
+        • Installation and commissioning guide
+        • Troubleshooting and maintenance manual
+
+2. TIMELINE
+
+   Month 1 (Feb 2027) ......... Hardware design + BOM locked
+   Month 2 (Mar 2027) ......... Firmware v1 + bench testing
+   Month 3 (Apr 2027) ......... Integration + field deployment
+   Month 4 (May 2027) ......... Field trial + documentation
+
+3. FEE AND PAYMENT
+
+   Total fee: USD 9,000
+
+   • 25% upon contract signature ......... USD 2,250
+   • 35% upon firmware v1 delivery ....... USD 3,150
+   • 25% upon field deployment ........... USD 2,250
+   • 15% upon final documentation ........ USD 1,350
+
+4. TECHNICAL STANDARDS
+
+   [IOT DEVELOPER NAME] warrants:
+     • All sensors meet accuracy requirements for Gold Standard
+       ACDM carbon credit verification
+     • Firmware under GNU GPL v3 (or equivalent open license)
+     • Hardware under Creative Commons Attribution 4.0
+     • All data encrypted with TLS 1.3 in transit, AES-256 at rest
+     • Operating range: 0–50 °C, up to 95% RH
+
+5. INTELLECTUAL PROPERTY
+
+   All hardware design files, firmware source, and integration
+   documentation shall be joint property of Recycle Organics and
+   GCFT Platform, with perpetual royalty-free license to
+   BiogasSTLucia.
+
+6. REPORTING
+
+   Bi-weekly progress reports + monthly technical review calls.
+
+7. CONFIDENTIALITY
+
+   Standard mutual NDA terms apply.
+
+Sincerely,
+
+_________________________________
+[Name], [Title]
+[IOT DEVELOPER LEGAL NAME]
+
+Countersigned on behalf of BiogasSTLucia:
+
+_________________________________
+[Project Lead], Founder
+BiogasSTLucia
+
+_________________________________
+[GCFT Lead Name]
+GCFT Platform
+
+════════════════════════════════════════════════════════════</div>
+  </div>
+</section>
+
+<!-- ═══════════════════════ TAB: PITCH DECK ═══════════════════════ -->
+<section id="tab-pitch" class="tab-panel hidden fade-in space-y-5">
+  <div class="card p-5">
+    <h3 class="text-sm font-bold text-slate-800">10-Slide Pitch Deck — With Speaker Notes</h3>
+    <p class="text-xs text-slate-500 mt-1">For Conecta Pitch Day (Nov 23–24, 2026). Each slide includes visual guidance and a 60–90 second script.</p>
+  </div>
+
+  <div class="slide-card">
+    <div class="flex items-start gap-4">
+      <div class="slide-number">1</div>
+      <div class="flex-grow">
+        <div class="text-[10px] font-bold text-cyan-600 uppercase tracking-widest mb-1">Title Slide</div>
+        <h4 class="text-lg font-black text-slate-900">BiogasSTLucia — Waste to Energy + Verified Carbon</h4>
+        <p class="text-xs text-slate-500 italic mt-1">Visual: Deep cyan background · Large logo · Two partner logos side-by-side</p>
+        <div class="speaker-notes"><strong>Speaker Notes · 60 sec</strong>St. Lucia is throwing away its energy. Half of what goes into the Deglos landfill is organic waste — food scraps, market waste, green waste, manure. That waste decomposes into methane, a greenhouse gas twenty-eight times more potent than CO₂. We're Recycle Organics and GCFT Platform. Recycle Organics has already deployed twenty-one biogas systems for St. Lucian farmers and a demonstration unit at SALCC. GCFT has built the digital infrastructure that turns sensor data into verified carbon credits. Today we're asking for forty thousand dollars to build the first IoT-monitored waste-to-energy prototype in the Eastern Caribbean.</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="slide-card">
+    <div class="flex items-start gap-4">
+      <div class="slide-number">2</div>
+      <div class="flex-grow">
+        <div class="text-[10px] font-bold text-cyan-600 uppercase tracking-widest mb-1">The Problem</div>
+        <h4 class="text-lg font-black text-slate-900">The Organic Waste Crisis</h4>
+        <ul class="text-xs text-slate-600 mt-2 space-y-1">
+          <li>▸ ~50% of St. Lucia's waste stream is organic — landfilled rather than recovered</li>
+          <li>▸ 77,600 tons of municipal solid waste generated annually</li>
+          <li>▸ Only 13.3% of waste is recycled</li>
+          <li>▸ Deglos landfill at ~50% capacity; Vieux-Fort closed (2019) due to leachate failure</li>
+          <li>▸ Global Methane Pledge signatory — waste methane remains unmanaged</li>
+          <li>▸ Tourism sector generates ~8% of waste with high organic loads</li>
+        </ul>
+        <div class="speaker-notes"><strong>Speaker Notes · 90 sec</strong>Look at these numbers. The Deglos landfill is half full. Vieux-Fort is closed. Only thirteen percent of St. Lucia's waste is recycled. And half of what we bury is organic — food scraps, market waste, green waste, manure. That waste decomposes into methane, a greenhouse gas twenty-eight times more potent than CO₂. St. Lucia signed the Global Methane Pledge. We're here to deliver on it. This isn't an abstract climate problem. It's a landfill management problem, an energy security problem, and a fertilizer import problem — all at once.</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="slide-card">
+    <div class="flex items-start gap-4">
+      <div class="slide-number">3</div>
+      <div class="flex-grow">
+        <div class="text-[10px] font-bold text-cyan-600 uppercase tracking-widest mb-1">The Solution</div>
+        <h4 class="text-lg font-black text-slate-900">Digester + Sensors + Carbon Finance</h4>
+        <ul class="text-xs text-slate-600 mt-2 space-y-1">
+          <li>▸ Modular anaerobic digester (2–4 m³, ferrocement) — $600</li>
+          <li>▸ IoT monitoring (4 sensors, solar, LoRaWAN) — $300</li>
+          <li>▸ GCFT dMRV platform — real-time carbon verification under GS ACDM</li>
+          <li>▸ <strong>Total installed cost: under $900</strong></li>
+          <li>▸ Bio-slurry fertilizer output: 20–40 L/day</li>
+        </ul>
+        <div class="speaker-notes"><strong>Speaker Notes · 90 sec</strong>Here's our solution. It's three things bundled together. First, a modular anaerobic digester — for a household, a farm, or a hotel — built with local ferrocement, costing six hundred dollars. Second, a sensor cluster — flow, pressure, temperature, methane — solar-powered, LoRaWAN-connected, costing three hundred dollars. Third, our secret weapon: the GCFT dMRV platform. Every sensor reading flows into the cloud, gets verified against Gold Standard ACDM methodology, and produces carbon credits. The digester isn't just a waste disposal unit anymore. It's a revenue-generating asset that produces cooking gas and fertilizer.</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="slide-card">
+    <div class="flex items-start gap-4">
+      <div class="slide-number">4</div>
+      <div class="flex-grow">
+        <div class="text-[10px] font-bold text-cyan-600 uppercase tracking-widest mb-1">Product Demo</div>
+        <h4 class="text-lg font-black text-slate-900">Live Data From Every Digester</h4>
+        <ul class="text-xs text-slate-600 mt-2 space-y-1">
+          <li>▸ Flow, pressure, temperature, CH₄ — every 2 seconds</li>
+          <li>▸ Carbon credits calculated in real time (ACDM)</li>
+          <li>▸ Household dashboard via SMS/WhatsApp</li>
+          <li>▸ Hotel/farm portfolio view for operators</li>
+          <li>▸ VVB-ready audit trail</li>
+        </ul>
+        <div class="speaker-notes"><strong>Speaker Notes · 60 sec</strong>This is what the platform looks like right now. Every digester we deploy streams data into this dashboard. Flow meters, pressure sensors, temperature probes, methane analyzers — all feeding the cloud, all converted into verified carbon reductions. The household sees a simple SMS dashboard. The hotel operator sees a portfolio view. The investor sees performance metrics. The verifier sees a complete audit trail. Same data, four audiences, one platform.</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="slide-card">
+    <div class="flex items-start gap-4">
+      <div class="slide-number">5</div>
+      <div class="flex-grow">
+        <div class="text-[10px] font-bold text-cyan-600 uppercase tracking-widest mb-1">Market Opportunity</div>
+        <h4 class="text-lg font-black text-slate-900">TAM / SAM / SOM</h4>
+        <ul class="text-xs text-slate-600 mt-2 space-y-1">
+          <li>▸ <strong>TAM:</strong> 38,800 tons organic waste/year (St. Lucia)</li>
+          <li>▸ <strong>SAM:</strong> 8,000+ farms, hotels, and rural households with organic feedstock</li>
+          <li>▸ <strong>SOM:</strong> 2,000 units within 5 years</li>
+          <li>▸ Carbon market: $18–25/tCO₂e · 2.24 t/unit/year</li>
+          <li>▸ Fertilizer market: EC$ substitute for imported synthetic fertilizer</li>
+        </ul>
+        <div class="speaker-notes"><strong>Speaker Notes · 75 sec</strong>The market is enormous for a small island. St. Lucia generates seventy-seven thousand tons of waste annually. Half is organic. That's thirty-eight thousand tons of methane-producing material going into the ground. Add the eight percent from hotels, the manure from livestock farms, and the green waste from landscaping — and you have a resource base that could power thousands of households, fertilize farms across the island, and generate verified carbon credits for decades. We're targeting just two thousand units in five years. At two point two four tonnes CO₂e per unit per year, that's over four thousand verified carbon credits annually. At eighteen to twenty-five dollars a tonne, that's nearly a hundred thousand dollars a year in carbon revenue — before we've sold a single digester.</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="slide-card">
+    <div class="flex items-start gap-4">
+      <div class="slide-number">6</div>
+      <div class="flex-grow">
+        <div class="text-[10px] font-bold text-cyan-600 uppercase tracking-widest mb-1">Business Model</div>
+        <h4 class="text-lg font-black text-slate-900">Four Revenue Streams</h4>
+        <ol class="text-xs text-slate-600 mt-2 space-y-1">
+          <li>1. <strong>Hardware:</strong> $900 per digester (lease-to-own)</li>
+          <li>2. <strong>Service:</strong> $8–12/month maintenance (household) / $50–150/month (hotel)</li>
+          <li>3. <strong>Carbon:</strong> 70% client / 30% BiogasSTLucia</li>
+          <li>4. <strong>Fertilizer:</strong> Bio-slurry buy-back and resale to agricultural sector</li>
+        </ol>
+        <div class="speaker-notes"><strong>Speaker Notes · 75 sec</strong>Our business model has four revenue streams. Hardware — the digester itself, sold on lease-to-own at nine hundred dollars. Service — a small monthly fee for maintenance and monitoring, tiered by client type. Hotels pay more because they have higher volumes and stricter uptime requirements. Carbon — we split credit revenue seventy-thirty with the client. Fertilizer — the bio-slurry that comes out of the digester is high-value organic fertilizer; we buy it back and sell it into the agricultural market. Combined, each household generates roughly twenty-five dollars a month in revenue. Hotels generate substantially more. Two thousand units means over six hundred thousand dollars a year.</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="slide-card">
+    <div class="flex items-start gap-4">
+      <div class="slide-number">7</div>
+      <div class="flex-grow">
+        <div class="text-[10px] font-bold text-cyan-600 uppercase tracking-widest mb-1">Traction</div>
+        <h4 class="text-lg font-black text-slate-900">Existing Programme + Live Platform</h4>
+        <div class="grid grid-cols-2 gap-3 mt-2">
+          <div class="bg-cyan-50 p-3 rounded-lg border border-cyan-200">
+            <div class="text-[10px] font-bold text-cyan-700 uppercase">Recycle Organics (St. Lucia)</div>
+            <div class="text-xs text-slate-700 mt-1">• 21 farmer biogas systems<br>• SALCC demonstration unit<br>• $8M CAD Canadian funding<br>• Proven local installation</div>
+          </div>
+          <div class="bg-blue-50 p-3 rounded-lg border border-blue-200">
+            <div class="text-[10px] font-bold text-blue-700 uppercase">GCFT Platform</div>
+            <div class="text-xs text-slate-700 mt-1">• Live dMRV cloud platform<br>• Verra, GS, Puro integrated<br>• ICVCM CCP aligned<br>• Article 6.2 ready</div>
+          </div>
+        </div>
+        <div class="speaker-notes"><strong>Speaker Notes · 75 sec</strong>We're not starting from scratch. Recycle Organics has already deployed twenty-one biogas systems for St. Lucian farmers and a demonstration unit at Sir Arthur Lewis Community College. The infrastructure works. The feedstock is there. GCFT is not a slide deck — it's a live platform with three registry integrations, an ICVCM-aligned scoring framework, and Article 6.2 readiness. What's new is the combination. Nobody has put a Recycle Organics digester and a GCFT-verified monitor together yet. That's what this grant pays for.</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="slide-card">
+    <div class="flex items-start gap-4">
+      <div class="slide-number">8</div>
+      <div class="flex-grow">
+        <div class="text-[10px] font-bold text-cyan-600 uppercase tracking-widest mb-1">Team</div>
+        <h4 class="text-lg font-black text-slate-900">Who Will Build This</h4>
+        <ul class="text-xs text-slate-600 mt-2 space-y-1">
+          <li>▸ <strong>[Project Lead]</strong> — Founder, BiogasSTLucia</li>
+          <li>▸ <strong>[GCFT Lead]</strong> — Technical Architect, GCFT Platform</li>
+          <li>▸ <strong>Recycle Organics Field Team</strong> — Installation & training</li>
+          <li>▸ <strong>SP1: [Fabricator]</strong> — Ferrocement fabrication partner (Saint Lucia)</li>
+          <li>▸ <strong>SP2: [IoT Developer]</strong> — Sensor + firmware partner</li>
+          <li>▸ <strong>Partners:</strong> SALCC Farm · SLSWMA · GIZ BioWaste Caribbean</li>
+        </ul>
+        <div class="speaker-notes"><strong>Speaker Notes · 60 sec</strong>This is the team. We have a field operations capability already proven through the Recycle Organics Programme. Our GCFT lead has built the entire dMRV platform from scratch. We have SALCC as our demonstration site, the Solid Waste Management Authority as a policy partner, and the GIZ BioWaste Caribbean project as a regional framework. And we've identified two service providers — a Saint Lucian fabricator and an IoT developer — who will build the physical prototype. Everyone here is committed to seeing this through.</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="slide-card">
+    <div class="flex items-start gap-4">
+      <div class="slide-number">9</div>
+      <div class="flex-grow">
+        <div class="text-[10px] font-bold text-cyan-600 uppercase tracking-widest mb-1">Use of Funds</div>
+        <h4 class="text-lg font-black text-slate-900">$40,000 Breakdown</h4>
+        <ul class="text-xs text-slate-600 mt-2 space-y-1">
+          <li>▸ Prototype Hardware (3 units): <strong>$4,200</strong></li>
+          <li>▸ Service Providers (SP1 + SP2): <strong>$17,000</strong></li>
+          <li>▸ Field Testing (6 months): <strong>$8,600</strong></li>
+          <li>▸ Software & Platform (ACDM engine): <strong>$7,000</strong></li>
+          <li>▸ Coaching, Docs & IP: <strong>$2,200</strong></li>
+          <li>▸ Contingency: <strong>$1,000</strong></li>
+        </ul>
+        <div class="speaker-notes"><strong>Speaker Notes · 60 sec</strong>Forty thousand dollars. Forty-three percent goes directly to the two service providers who build the prototype — that's paid directly by Conecta, not through us. The rest covers materials for three demonstration units, field testing for six months, software integration with the GCFT platform, and the documentation package that will let us approach VVBs and investors after the prototype. This is not a round number — every line item is a quote from a real provider.</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="slide-card">
+    <div class="flex items-start gap-4">
+      <div class="slide-number">10</div>
+      <div class="flex-grow">
+        <div class="text-[10px] font-bold text-cyan-600 uppercase tracking-widest mb-1">The Ask & Roadmap</div>
+        <h4 class="text-lg font-black text-slate-900">$40K → 2,000 Units</h4>
+        <ul class="text-xs text-slate-600 mt-2 space-y-1">
+          <li>▸ <strong>Ask:</strong> $40,000 Conecta Caribbean Prototype Grant</li>
+          <li>▸ May 2027 — Three working prototypes with verified data</li>
+          <li>▸ Dec 2027 — 200 units via GCF/CDB financing</li>
+          <li>▸ 2029 — 500 units across St. Lucia</li>
+          <li>▸ 2031 — 2,000 units + OECS expansion (Grenada, St. Vincent, Dominica)</li>
+        </ul>
+        <div class="speaker-notes"><strong>Speaker Notes · 60 sec</strong>We're asking for forty thousand dollars to build three working prototypes — at SALCC Farm, at a hotel partner, and at a household. Six months later, we'll have verified performance data from real St. Lucian sites. That data unlocks the next round of financing — two hundred units backed by GCF readiness funding and CDB concessional loans. By 2029, five hundred units. By 2031, two thousand units across St. Lucia, and the same model replicated in Grenada, St. Vincent, and Dominica. St. Lucia has the waste. We have the technology. Let's turn the landfill problem into a resource recovery economy. Thank you.</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════════════ TAB: TECH BRIEF ═══════════════════════ -->
+<section id="tab-brief" class="tab-panel hidden fade-in space-y-6">
+  <div class="card p-6">
+    <div class="flex justify-between items-center mb-4 flex-wrap gap-2">
+      <h3 class="text-sm font-bold text-slate-800">Technical Brief — For VVB & Investor Due Diligence</h3>
+      <span class="text-[10px] bg-purple-100 text-purple-700 px-2 py-1 rounded font-bold">BIO-STL-TB-2026-v1.0</span>
+    </div>
+    <div class="tech-brief">════════════════════════════════════════════════════════════
+   TECHNICAL BRIEF — BiogasSTLucia Modular Anaerobic Digester
+   For Validation & Verification Bodies and Investor Diligence
+════════════════════════════════════════════════════════════
+
+Document Reference:  BIO-STL-TB-2026-v1.0
+Date:                October 2026
+Prepared by:         GCFT Platform · Technical Architecture
+Reviewed by:         Recycle Organics · Field Operations
+Version:             1.0 (Draft for Review)
+
+────────────────────────────────────────────────────────────
+1. EXECUTIVE SUMMARY
+────────────────────────────────────────────────────────────
+
+BiogasSTLucia is developing a modular anaerobic digester for
+organic waste-to-energy, integrated with a low-cost IoT
+monitoring system. Designed for carbon credit registration
+under Gold Standard ACDM (Alternative Cover and Digestion
+Methodology) and Article 6.2 bilateral cooperation.
+
+The system is designed for three deployment scales:
+   • Household (2 m³, 20–40 kg/day feedstock)
+   • Farm (4 m³, 40–60 kg/day feedstock)
+   • Hotel (modular clusters, 100+ kg/day feedstock)
+
+This brief provides the technical foundation for:
+   • Validation by an accredited VVB
+   • Investor due diligence on technology and risk
+   • Peer review by academic and technical advisors
+
+────────────────────────────────────────────────────────────
+2. SYSTEM ARCHITECTURE
+────────────────────────────────────────────────────────────
+
+2.1 Physical System
+
+   Component                  Specification
+   ─────────────────────────────────────────────
+   Digester type              Dome-type ferrocement
+   Volume                     2–4 m³ (nominal 2 m³)
+   Feedstock                  Food waste + manure + green waste
+   Feedstock rate             20–60 kg/day
+   Hydraulic retention time   25–35 days
+   Operating temperature      30–38 °C (mesophilic)
+   Biogas yield               0.5–2.0 m³/day
+   Methane content            55–65% CH₄
+   Fertilizer output          20–40 L/day liquid bio-slurry
+
+2.2 Feedstock Strategy
+
+   Co-digestion of three streams:
+     • Food waste (high biogas yield, low C:N)
+     • Manure (buffering capacity, methanogen inoculum)
+     • Green waste (carbon balance, structural material)
+
+   Mixing ratio: 60% food waste / 30% manure / 10% green
+   waste by mass (adjustable by season and availability).
+
+2.3 Sensor Package
+
+   Sensor              Class                 Accuracy      Sample
+   ─────────────────────────────────────────────────────────
+   Flow meter          Membrane/thermal      ±2% reading   1 Hz
+   Pressure            Piezoresistive        ±0.5 kPa      10 Hz
+   Temperature         PT100 Class A         ±0.3 °C       1 Hz
+   CH₄ analyzer        NDIR                  ±3% FS        0.1 Hz
+   Microcontroller     ESP32-WROOM-32        —             100 Hz
+   Radio               LoRaWAN SX1276        —             2 s
+   Power               3W solar + 18650      —             —
+
+2.4 Data Flow
+
+   Sensor → MCU → LoRaWAN/GSM → GCFT Cloud → Registry
+
+   Buffer: 30-day local storage
+   Encryption: TLS 1.3 in transit, AES-256 at rest
+   Signature: SHA-256 hash per payload
+   Retention: 10 years
+
+────────────────────────────────────────────────────────────
+3. CARBON ACCOUNTING METHODOLOGY
+────────────────────────────────────────────────────────────
+
+3.1 Applicable Standard
+   Gold Standard ACDM — Alternative Cover and Digestion
+   Methodology for organic waste diversion and methane
+   avoidance. Aligned with IPCC 2006 Waste Model.
+
+3.2 Emission Reduction Equation
+
+   ER_total = (ER_CH4_avoided + ER_fertilizer) × (1 − Leakage)
+
+   ER_CH4_avoided = Waste_organic × MCF × DOC × DOCf × F
+                    × 16/12 × GWP_CH4
+
+       Waste_organic = organic waste diverted (t/yr)
+       MCF = methane correction factor (0.8 managed)
+       DOC = degradable organic carbon (0.15 food waste)
+       DOCf = fraction of DOC that decomposes (0.5)
+       F = fraction of CH₄ in landfill gas (0.5)
+       GWP_CH4 = 28 (IPCC AR5, 100-year)
+
+   ER_fertilizer = Slurry_output × EF_fertilizer × fNRB
+
+       Slurry_output = bio-slurry produced (t/yr)
+       EF_fertilizer = synthetic fertilizer emission factor
+       fNRB = fraction of non-renewable biomass (0.85)
+
+3.3 Default Parameters (St. Lucia)
+
+   Parameter              Value      Source
+   ─────────────────────────────────────────────
+   Organic waste landfilled ~38,800 t/yr  SLSWMA / CIA
+   MCF (managed landfill) 0.8        IPCC 2006
+   DOC (food waste)       0.15       IPCC 2006
+   DOCf                   0.5        IPCC 2006
+   F                      0.5        IPCC 2006
+   GWP_CH₄ (100-yr)       28         IPCC AR5
+   Leakage (default)      10%        Gold Standard
+   Leakage (sensor)       1–3%       dMRV pilots
+
+3.4 Sample Calculation
+
+   Given: 2 tonnes organic waste diverted per year,
+          household of 5, mixed feedstock
+
+   ER_CH4_avoided = 2.0 × 0.8 × 0.15 × 0.5 × 0.5
+                    × 1.333 × 28
+                  ≈ 2.24 tCO₂e/year
+   ER_fertilizer  ≈ 0.15 tCO₂e/year (fertilizer offset)
+   Leakage (sensor) = 2%
+   ER_total = (2.24 + 0.15) × 0.98 ≈ 2.34 tCO₂e/unit/year
+
+   Conservative value for crediting: 2.24 tCO₂e/unit/year
+
+────────────────────────────────────────────────────────────
+4. DATA QUALITY & UNCERTAINTY
+────────────────────────────────────────────────────────────
+
+4.1 Uncertainty Budget
+
+   Source                     Uncertainty
+   ─────────────────────────────────────────────
+   Organic waste quantity     ±15%
+   DOC (food waste)           ±10%
+   MCF                        ±20%
+   GWP_CH₄                    0% (fixed)
+   Leakage                    ±5% (sensor)
+   Combined (RSS)             ±28%
+
+   Target: <30% (per ICVCM requirements)
+
+4.2 Data Quality Controls
+
+   • Continuous monitoring with <5% data gaps
+   • Redundant sensors on gas flow
+   • Cross-validation against gas holder fill rate
+   • ML-based anomaly detection (GCFT)
+   • Quarterly manual audit spot-checks (10% sample)
+
+4.3 Gap-Filling Rules
+
+   Gap duration       Action
+   ─────────────────────────────────────────────
+   < 1 hour           Linear interpolation
+   1–24 hours         Conservative minimum (7-day)
+   1–7 days           Minimum of previous 30 days
+   > 7 days           Excluded from crediting
+
+────────────────────────────────────────────────────────────
+5. VALIDATION PATHWAY
+────────────────────────────────────────────────────────────
+
+5.1 VVB Shortlist
+
+   • SCS Global Services (US)
+   • AENOR Internacional (Spain)
+   • TÜV NORD (Germany)
+   • Ernst & Young Global Limited
+
+5.2 Validation Milestones
+
+   Month 1    PDD submitted to VVB
+   Month 2    Site visit + stakeholder interviews
+   Month 3    Validation report draft
+   Month 4    Validation report finalized
+   Month 5    Gold Standard registration
+   Month 6+   First monitoring period
+
+────────────────────────────────────────────────────────────
+6. RISK ASSESSMENT
+────────────────────────────────────────────────────────────
+
+6.1 Technical Risks
+
+   Risk                     Likelihood   Impact   Mitigation
+   ─────────────────────────────────────────────────────────
+   Sensor failure           Medium       Medium   Redundancy
+   Digester gas leak        Low          High     Pressure test
+   CH₄ analyzer drift       Medium       Medium   Annual calibration
+   LoRaWAN coverage gap     Low          Medium   GSM fallback
+   Hurricane damage         Medium       High     IP66 + anchor
+   Feedstock interruption   Medium       Medium   Multi-source supply
+   Feedstock contamination  Medium       Medium   Pre-sorting SOP
+
+6.2 Carbon Market Risks
+
+   Risk                     Likelihood   Impact   Mitigation
+   ─────────────────────────────────────────────────────────
+   MCF overestimation       Medium       Medium   Conservative 0.8
+   DOC uncertainty          Medium       Medium   IPCC defaults
+   Credit price volatility  Medium       Medium   Forward contracts
+   VVB rejection            Low          High     Pre-validation
+   Double counting          Low          High     CA ledger
+
+────────────────────────────────────────────────────────────
+7. INTELLECTUAL PROPERTY
+────────────────────────────────────────────────────────────
+
+   Joint property of Recycle Organics and GCFT Platform with
+   perpetual royalty-free license granted to BiogasSTLucia.
+
+   Open-source commitment:
+      • Firmware: GNU GPL v3
+      • Hardware: Creative Commons Attribution 4.0
+      • Documentation: CC-BY-SA 4.0
+
+────────────────────────────────────────────────────────────
+8. COST-TO-CREDIT ANALYSIS
+────────────────────────────────────────────────────────────
+
+   Parameter                          Value
+   ─────────────────────────────────────────────
+   Installed cost per unit            $900
+   Annual credits per unit            2.24 tCO₂e
+   Credit price (forward)             $18/t
+   Annual credit value per unit       $40.32
+   Payback (carbon only)              ~22 years
+   Payback (+service)                 ~15 years
+   Payback (+fertilizer)              ~11 years
+   Payback (@ $40/tCO₂e)              ~7 years
+
+────────────────────────────────────────────────────────────
+9. SCALE-UP ROADMAP
+────────────────────────────────────────────────────────────
+
+   Phase        Units    Year   Cumulative    Revenue
+   ──────────────────────────────────────────────────
+   Prototype    3        2027   3             —
+   Pilot        200      2028   200           $8K
+   Scale        500      2029   700           $20K
+   National     2,000    2031   2,700         $80K
+   Regional     8,000    2033   10,700        $320K
+
+────────────────────────────────────────────────────────────
+10. REFERENCES
+────────────────────────────────────────────────────────────
+
+   [1] IPCC 2006 Guidelines for National Greenhouse Gas
+       Inventories, Volume 5: Waste
+   [2] IPCC AR5 (2014) — GWP values
+   [3] Gold Standard ACDM Methodology
+   [4] ICVCM Core Carbon Principles, 2023
+   [5] CIA World Factbook — Saint Lucia (2024 est.)
+   [6] Saint Lucia Solid Waste Management Authority (SLSWMA)
+   [7] Recycle Organics Programme — St. Lucia (2026)
+   [8] GIZ BioWaste Caribbean Project (€10M)
+   [9] Saint Lucia NDC 3.0 (2025)
+   [10] GCFT Platform dMRV Architecture (internal)
+
+════════════════════════════════════════════════════════════
+   END OF TECHNICAL BRIEF
+════════════════════════════════════════════════════════════</div>
+  </div>
+</section>
+
+<!-- ═══════════════════════ TAB: CONCEPT NOTE ═══════════════════════ -->
+<section id="tab-concept" class="tab-panel hidden fade-in space-y-6">
+  <div class="card p-6">
+    <div class="flex justify-between items-center mb-4 flex-wrap gap-3">
+      <div>
+        <div class="text-[10px] font-bold text-cyan-600 uppercase tracking-widest mb-1">GCF SAP Submission</div>
+        <h3 class="text-lg font-black text-slate-900">Concept Note — v1.0</h3>
+        <p class="text-xs text-slate-500 mt-1">CN-SAP-LC-2026-BSL-001 · 26 pages · CDB/GCF aligned · Includes Section B.6 (Competitive) + Annex V (MOU)</p>
+      </div>
+    </div>
+
+    <div class="grid md:grid-cols-4 gap-3 mt-5">
+      <div class="bg-cyan-50 border border-cyan-200 rounded-lg p-4 text-center">
+        <div class="text-[10px] text-cyan-700 uppercase tracking-widest font-bold mb-1">Total Cost</div>
+        <div class="mono text-2xl font-black text-cyan-700">$8.2M</div>
+        <div class="text-[10px] text-slate-500 mt-1">GCF: $3.85M</div>
+      </div>
+      <div class="bg-blue-50 border border-blue-200 rounded-lg p-4 text-center">
+        <div class="text-[10px] text-blue-700 uppercase tracking-widest font-bold mb-1">Units</div>
+        <div class="mono text-2xl font-black text-blue-700">500</div>
+        <div class="text-[10px] text-slate-500 mt-1">by Year 3</div>
+      </div>
+      <div class="bg-amber-50 border border-amber-200 rounded-lg p-4 text-center">
+        <div class="text-[10px] text-amber-700 uppercase tracking-widest font-bold mb-1">tCO₂e/Year</div>
+        <div class="mono text-2xl font-black text-amber-700">1,120</div>
+        <div class="text-[10px] text-slate-500 mt-1">Year 3 base case</div>
+      </div>
+      <div class="bg-purple-50 border border-purple-200 rounded-lg p-4 text-center">
+        <div class="text-[10px] text-purple-700 uppercase tracking-widest font-bold mb-1">Green Jobs</div>
+        <div class="mono text-2xl font-black text-purple-700">45</div>
+        <div class="text-[10px] text-slate-500 mt-1">38% female</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="card p-6">
+    <h3 class="text-sm font-bold text-slate-800 mb-4">Concept Note Structure</h3>
+    <div class="grid md:grid-cols-2 gap-3 text-xs">
+      <div class="flex items-start gap-3 py-2 border-b border-slate-100"><span class="w-8 h-6 rounded bg-cyan-100 text-cyan-700 font-black flex items-center justify-center text-[10px] flex-shrink-0">A</span><span class="text-slate-700">Project Identification &amp; Components</span></div>
+      <div class="flex items-start gap-3 py-2 border-b border-slate-100"><span class="w-8 h-6 rounded bg-cyan-100 text-cyan-700 font-black flex items-center justify-center text-[10px] flex-shrink-0">B.1</span><span class="text-slate-700">Climate Context and Vulnerability</span></div>
+      <div class="flex items-start gap-3 py-2 border-b border-slate-100"><span class="w-8 h-6 rounded bg-cyan-100 text-cyan-700 font-black flex items-center justify-center text-[10px] flex-shrink-0">B.2</span><span class="text-slate-700">Theory of Change</span></div>
+      <div class="flex items-start gap-3 py-2 border-b border-slate-100"><span class="w-8 h-6 rounded bg-cyan-100 text-cyan-700 font-black flex items-center justify-center text-[10px] flex-shrink-0">B.3</span><span class="text-slate-700">Project Description</span></div>
+      <div class="flex items-start gap-3 py-2 border-b border-slate-100"><span class="w-8 h-6 rounded bg-cyan-100 text-cyan-700 font-black flex items-center justify-center text-[10px] flex-shrink-0">B.4</span><span class="text-slate-700">Financial Model &amp; Sustainability</span></div>
+      <div class="flex items-start gap-3 py-2 border-b border-slate-100"><span class="w-8 h-6 rounded bg-cyan-100 text-cyan-700 font-black flex items-center justify-center text-[10px] flex-shrink-0">B.5</span><span class="text-slate-700">GCF Investment Criteria</span></div>
+      <div class="flex items-start gap-3 py-2 border-b border-slate-100 bg-cyan-50 rounded"><span class="w-8 h-6 rounded bg-cyan-500 text-white font-black flex items-center justify-center text-[10px] flex-shrink-0">B.6</span><span class="text-slate-700 font-bold">Competitive Landscape (NEW)</span></div>
+      <div class="flex items-start gap-3 py-2 border-b border-slate-100"><span class="w-8 h-6 rounded bg-cyan-100 text-cyan-700 font-black flex items-center justify-center text-[10px] flex-shrink-0">C</span><span class="text-slate-700">Financing Structure</span></div>
+      <div class="flex items-start gap-3 py-2 border-b border-slate-100"><span class="w-8 h-6 rounded bg-cyan-100 text-cyan-700 font-black flex items-center justify-center text-[10px] flex-shrink-0">D</span><span class="text-slate-700">Environmental &amp; Social Safeguards</span></div>
+      <div class="flex items-start gap-3 py-2 border-b border-slate-100"><span class="w-8 h-6 rounded bg-cyan-100 text-cyan-700 font-black flex items-center justify-center text-[10px] flex-shrink-0">E</span><span class="text-slate-700">Monitoring, Evaluation &amp; Reporting</span></div>
+      <div class="flex items-start gap-3 py-2 border-b border-slate-100"><span class="w-8 h-6 rounded bg-cyan-100 text-cyan-700 font-black flex items-center justify-center text-[10px] flex-shrink-0">I</span><span class="text-slate-700">NDA No-Objection Letter</span></div>
+      <div class="flex items-start gap-3 py-2 border-b border-slate-100 bg-cyan-50 rounded"><span class="w-8 h-6 rounded bg-cyan-500 text-white font-black flex items-center justify-center text-[10px] flex-shrink-0">V</span><span class="text-slate-700 font-bold">MOU Template (NEW)</span></div>
+    </div>
+  </div>
+
+  <div class="card p-6">
+    <h3 class="text-sm font-bold text-slate-800 mb-4">Policy Alignment — St. Lucia</h3>
+    <div class="grid md:grid-cols-2 gap-3">
+      <div class="bg-cyan-50 border border-cyan-200 rounded-lg p-4"><div class="text-[10px] font-bold text-cyan-700 uppercase tracking-wider mb-1">NDC 3.0</div><div class="text-xs text-slate-700">14.7% emissions reduction in energy and transport by 2030; 22% by 2035. Waste-sector methane directly contributes.</div></div>
+      <div class="bg-cyan-50 border border-cyan-200 rounded-lg p-4"><div class="text-[10px] font-bold text-cyan-700 uppercase tracking-wider mb-1">Global Methane Pledge</div><div class="text-xs text-slate-700">St. Lucia is a signatory. BiogasSTLucia provides a measurable, verifiable methane reduction pathway.</div></div>
+      <div class="bg-cyan-50 border border-cyan-200 rounded-lg p-4"><div class="text-[10px] font-bold text-cyan-700 uppercase tracking-wider mb-1">GCF Country Programme</div><div class="text-xs text-slate-700">No GCF projects currently active in St. Lucia. BiogasSTLucia positioned as a first-mover under CDB's DAE status.</div></div>
+      <div class="bg-cyan-50 border border-cyan-200 rounded-lg p-4"><div class="text-[10px] font-bold text-cyan-700 uppercase tracking-wider mb-1">Regional Frameworks</div><div class="text-xs text-slate-700">Recycle Organics ($8M CAD) and GIZ BioWaste Caribbean (€10M) provide existing infrastructure and momentum.</div></div>
+    </div>
+  </div>
+
+  <div class="card p-6 bg-gradient-to-br from-cyan-50 to-blue-50 border-2 border-cyan-300">
+    <div class="text-[10px] font-bold text-cyan-700 uppercase tracking-widest mb-2">How to Generate the PDF</div>
+    <p class="text-xs text-slate-700 leading-relaxed">The full 26-page Concept Note is available as a separate print-ready HTML document. Open <span class="mono bg-white px-1.5 py-0.5 rounded border border-slate-200">BiogasSTLucia_Concept_Note_v1.0.html</span> and press <strong>Ctrl+P → Save as PDF</strong> with <strong>Background graphics ON</strong> to preserve full color.</p>
+  </div>
+</section>
+
+<!-- ═══════════════════════ TAB: INVESTOR PACK ═══════════════════════ -->
+<section id="tab-investor" class="tab-panel hidden fade-in space-y-6">
+  <div class="card p-6">
+    <div class="text-[10px] font-bold text-cyan-600 uppercase tracking-widest mb-1">Anchor Investor Materials</div>
+    <h3 class="text-lg font-black text-slate-900 mb-2">Investor Pack</h3>
+    <p class="text-xs text-slate-500 mb-5">One-pager, positioning memo, and due diligence package for IDB Invest, BII, CDB, and GCF PPF</p>
+
+    <div class="grid md:grid-cols-4 gap-3">
+      <div class="bg-cyan-50 border border-cyan-200 rounded-lg p-4 text-center">
+        <div class="text-[10px] text-cyan-700 uppercase tracking-widest font-bold mb-1">Anchor Ask</div>
+        <div class="mono text-2xl font-black text-cyan-700">$3M</div>
+        <div class="text-[10px] text-slate-500 mt-1">Forward purchase</div>
+      </div>
+      <div class="bg-blue-50 border border-blue-200 rounded-lg p-4 text-center">
+        <div class="text-[10px] text-blue-700 uppercase tracking-widest font-bold mb-1">Target IRR</div>
+        <div class="mono text-2xl font-black text-blue-700">14–18%</div>
+        <div class="text-[10px] text-slate-500 mt-1">7-year hold</div>
+      </div>
+      <div class="bg-amber-50 border border-amber-200 rounded-lg p-4 text-center">
+        <div class="text-[10px] text-amber-700 uppercase tracking-widest font-bold mb-1">First Issuance</div>
+        <div class="mono text-2xl font-black text-amber-700">Q4 2028</div>
+        <div class="text-[10px] text-slate-500 mt-1">Verified credits</div>
+      </div>
+      <div class="bg-purple-50 border border-purple-200 rounded-lg p-4 text-center">
+        <div class="text-[10px] text-purple-700 uppercase tracking-widest font-bold mb-1">Coverage</div>
+        <div class="mono text-2xl font-black text-purple-700">1.15×</div>
+        <div class="text-[10px] text-slate-500 mt-1">Downside protection</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="grid md:grid-cols-2 gap-6">
+    <div class="card p-6">
+      <h3 class="text-sm font-bold text-slate-800 mb-4">Target DFIs</h3>
+      <div class="space-y-3">
+        <div class="flex items-center gap-3 p-3 bg-cyan-50 border border-cyan-200 rounded-lg">
+          <div class="w-10 h-10 bg-cyan-500 text-white rounded-lg flex items-center justify-center font-black text-xs flex-shrink-0">IDB</div>
+          <div class="flex-grow"><div class="text-xs font-bold text-slate-800">IDB Invest</div><div class="text-[10px] text-slate-500">Blended finance · Caribbean waste-to-energy precedent</div></div>
+          <span class="text-[9px] bg-amber-100 text-amber-700 px-2 py-0.5 rounded font-bold">PRIORITY</span>
+        </div>
+        <div class="flex items-center gap-3 p-3 bg-blue-50 border border-blue-200 rounded-lg">
+          <div class="w-10 h-10 bg-blue-500 text-white rounded-lg flex items-center justify-center font-black text-xs flex-shrink-0">BII</div>
+          <div class="flex-grow"><div class="text-xs font-bold text-slate-800">British International Investment</div><div class="text-[10px] text-slate-500">Co-investor in Sistema.bio FarmCarbon</div></div>
+          <span class="text-[9px] bg-amber-100 text-amber-700 px-2 py-0.5 rounded font-bold">PRIORITY</span>
+        </div>
+        <div class="flex items-center gap-3 p-3 bg-slate-50 border border-slate-200 rounded-lg">
+          <div class="w-10 h-10 bg-slate-600 text-white rounded-lg flex items-center justify-center font-black text-[10px] flex-shrink-0">CDB</div>
+          <div class="flex-grow"><div class="text-xs font-bold text-slate-800">CDB Climate Window</div><div class="text-[10px] text-slate-500">Regional climate finance facility · GCF DAE</div></div>
+          <span class="text-[9px] bg-blue-100 text-blue-700 px-2 py-0.5 rounded font-bold">SECONDARY</span>
+        </div>
+        <div class="flex items-center gap-3 p-3 bg-slate-50 border border-slate-200 rounded-lg">
+          <div class="w-10 h-10 bg-slate-600 text-white rounded-lg flex items-center justify-center font-black text-[10px] flex-shrink-0">GCF</div>
+          <div class="flex-grow"><div class="text-xs font-bold text-slate-800">GCF Project Preparation Facility</div><div class="text-[10px] text-slate-500">PPF for pre-investment work</div></div>
+          <span class="text-[9px] bg-blue-100 text-blue-700 px-2 py-0.5 rounded font-bold">SECONDARY</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="card p-6">
+      <h3 class="text-sm font-bold text-slate-800 mb-4">Diligence Package Contents</h3>
+      <ul class="space-y-2 text-xs text-slate-700">
+        <li class="flex gap-2"><span class="text-cyan-600 font-bold">✓</span><span>Full Financial Model (Excel, 10-year projection)</span></li>
+        <li class="flex gap-2"><span class="text-cyan-600 font-bold">✓</span><span>Technical Brief (BIO-STL-TB-2026-v1.0)</span></li>
+        <li class="flex gap-2"><span class="text-cyan-600 font-bold">✓</span><span>PDD draft (Gold Standard ACDM)</span></li>
+        <li class="flex gap-2"><span class="text-cyan-600 font-bold">✓</span><span>Sensor BOM and supplier pricing</span></li>
+        <li class="flex gap-2"><span class="text-cyan-600 font-bold">✓</span><span>Recycle Organics programme report (St. Lucia)</span></li>
+        <li class="flex gap-2"><span class="text-cyan-600 font-bold">✓</span><span>GCFT Platform architecture document</span></li>
+        <li class="flex gap-2"><span class="text-cyan-600 font-bold">✓</span><span>NDA no-objection letter draft</span></li>
+        <li class="flex gap-2"><span class="text-cyan-600 font-bold">✓</span><span>Service provider letters of engagement (SP1, SP2)</span></li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="card p-6">
+    <h3 class="text-sm font-bold text-slate-800 mb-4">Financial Projections (7-Year)</h3>
+    <div class="h-72"><canvas id="chartInvestorCashflow"></canvas></div>
+  </div>
+
+  <div class="card p-6 bg-gradient-to-br from-cyan-50 to-blue-50 border-2 border-cyan-300">
+    <div class="text-[10px] font-bold text-cyan-700 uppercase tracking-widest mb-2">Anchor Investor One-Pager</div>
+    <p class="text-xs text-slate-700 leading-relaxed">A single-page investor summary is available as a separate print-ready HTML document. Open <span class="mono bg-white px-1.5 py-0.5 rounded border border-slate-200">BiogasSTLucia_Anchor_OnePager.html</span> and press <strong>Ctrl+P → Save as PDF</strong>.</p>
+  </div>
+</section>
+
+<!-- ═══════════════════════ TAB: MOU TEMPLATE ═══════════════════════ -->
+<section id="tab-mou" class="tab-panel hidden fade-in space-y-6">
+  <div class="card p-6">
+    <div class="flex justify-between items-center mb-4 flex-wrap gap-3">
+      <div>
+        <div class="text-[10px] font-bold text-cyan-600 uppercase tracking-widest mb-1">Waste Diversion Pathway</div>
+        <h3 class="text-lg font-black text-slate-900">MOU Template — Saint Lucia Solid Waste Management Authority</h3>
+        <p class="text-xs text-slate-500 mt-1">For the low-income household co-financing framework · Reference MOU-SLSWMA-BSL-2026-001</p>
+      </div>
+      <button onclick="copyMOU()" class="bg-cyan-500 hover:bg-cyan-600 text-white font-bold py-2.5 px-5 rounded-lg text-xs uppercase tracking-wider shadow-md">Copy MOU Text</button>
+    </div>
+
+    <div class="bg-slate-50 border border-slate-200 rounded-xl p-6 mono text-[11px] leading-relaxed text-slate-700 whitespace-pre-wrap overflow-y-auto" style="max-height:640px;" id="mouText">MEMORANDUM OF UNDERSTANDING
+BiogasSTLucia Low-Income Household Waste Diversion Pathway
+
+Between:
+The Saint Lucia Solid Waste Management Authority (SLSWMA)
+Republic of Saint Lucia
+
+And:
+BiogasSTLucia, a Joint Venture of Recycle Organics (Saint Lucia)
+and GCFT Platform
+
+Date: [Insert]
+Reference: MOU-SLSWMA-BSL-2026-001
+
+────────────────────────────────────────────────────────────
+
+PREAMBLE
+
+The Saint Lucia Solid Waste Management Authority is mandated
+to manage solid waste in an environmentally sound manner,
+reduce landfilling, and extend the operational life of the
+Deglos Sanitary Landfill.
+
+BiogasSTLucia deploys modular anaerobic digesters with IoT
+monitoring to divert organic waste from landfill, deliver
+clean cooking fuel, produce agricultural fertilizer, and
+generate verified carbon credits across Saint Lucia.
+
+Both parties recognize that organic waste diversion is the
+single highest-impact intervention available for extending
+landfill life and meeting Saint Lucia's Global Methane
+Pledge commitments. Both parties further recognize that
+affordability is a barrier for low-income households.
+
+This MOU establishes the framework for a joint waste
+diversion and subsidy pathway.
+
+────────────────────────────────────────────────────────────
+
+ARTICLE 1 — OBJECTIVE
+
+To establish a joint waste diversion and co-financing
+pathway for BiogasSTLucia's low-income household tier,
+ensuring that households in the lowest two income quintiles
+— particularly female-headed households — can participate
+in organic waste diversion and access clean cooking energy
+at an affordable price.
+
+────────────────────────────────────────────────────────────
+
+ARTICLE 2 — SCOPE OF COOPERATION
+
+SLSWMA Commitments:
+  • Contribute USD 3.00/month per qualifying household
+  • Identify qualifying households through social registry
+  • Provide organic waste collection coordination where
+    feasible (market waste, green waste)
+  • Process quarterly subsidy payments to escrow
+  • Facilitate community outreach through waste officers
+  • Co-brand service certificates
+  • Report diverted tonnage in annual landfill statistics
+
+BiogasSTLucia Commitments:
+  • Deliver low-income tier service at USD 8.00/month
+  • Verify household income and eligibility independently
+  • Provide quarterly service verification report
+  • Provide monthly organic waste diversion data (tonnes)
+  • Prioritize employment of informal-sector waste workers
+  • Provide gender-disaggregated impact data
+
+────────────────────────────────────────────────────────────
+
+ARTICLE 3 — ELIGIBILITY CRITERIA
+
+1. Household income below EC$1,000/month
+2. Female-headed household (priority category)
+3. Resident in target communes (Castries, Gros Islet,
+   Vieux-Fort, Soufrière, Dennery)
+4. Registered in SLSWMA service area
+5. Willing to sign Household Agreement transferring
+   carbon rights to BiogasSTLucia
+6. Committed to source-separating organic waste
+
+────────────────────────────────────────────────────────────
+
+ARTICLE 4 — FINANCIAL TERMS
+
+Household contribution:      USD 5.00 / month
+SLSWMA subsidy:              USD 3.00 / month
+Total low-income tier rev:   USD 8.00 / month
+
+Annual SLSWMA commitment (500 HHs): USD 18,000 / year
+
+Payment: quarterly disbursement to BiogasSTLucia escrow
+account with reconciliation against service verification.
+
+────────────────────────────────────────────────────────────
+
+ARTICLE 5 — WASTE DIVERSION TARGETS
+
+Year 1:  500 tonnes organic waste diverted
+Year 2:  1,200 tonnes organic waste diverted
+Year 3:  2,500 tonnes organic waste diverted
+
+Equivalent landfill volume saved: approximately 3,000 m³
+per year at Year 3 (based on compacted density of 0.8 t/m³).
+
+────────────────────────────────────────────────────────────
+
+ARTICLE 6 — DURATION
+
+Initial term: 5 years from signature
+Renewal: by mutual agreement
+Review checkpoints: Year 2 and Year 4
+
+────────────────────────────────────────────────────────────
+
+ARTICLE 7 — GOVERNANCE
+
+Joint Coordination Committee meets quarterly
+Co-chaired by SLSWMA General Manager and
+BiogasSTLucia Project Director
+
+────────────────────────────────────────────────────────────
+
+ARTICLE 8 — MONITORING AND REPORTING
+
+BiogasSTLucia provides SLSWMA with:
+  • Monthly subsidy utilization statement
+  • Quarterly household service verification
+  • Quarterly organic waste diversion report (tonnes)
+  • Annual impact assessment (gender-disaggregated)
+  • Immediate notification of any service interruption
+
+────────────────────────────────────────────────────────────
+
+ARTICLE 9 — DATA SHARING AND CONFIDENTIALITY
+
+Household data shared only as necessary for eligibility
+verification. All personal data protected under the
+Saint Lucia Data Protection Act.
+
+────────────────────────────────────────────────────────────
+
+ARTICLE 10 — DISPUTE RESOLUTION
+
+1. Direct negotiation between parties (30 days)
+2. Mediation by the Ministry of Sustainable Development,
+   Energy, Science and Technology
+3. Arbitration in Castries under Saint Lucian law
+
+────────────────────────────────────────────────────────────
+
+ARTICLE 11 — TERMINATION
+
+Either party may terminate with 6-month written notice.
+Households enrolled at termination remain served until
+alternative arrangements are made.
+
+────────────────────────────────────────────────────────────
+
+ARTICLE 12 — ENTIRE AGREEMENT
+
+This MOU supersedes all prior agreements. Amendments
+require written consent of both parties.
+
+────────────────────────────────────────────────────────────
+
+SIGNATURES
+
+For the Saint Lucia Solid Waste Management Authority
+
+Name: ________________________
+Title: _________________________
+Signature: _____________________
+Date: __________________________
+Seal: __________________________
+
+For BiogasSTLucia
+
+Name: ________________________
+Title: Founder, BiogasSTLucia
+Signature: _____________________
+Date: __________________________
+
+Witnessed by:
+
+Name: ________________________
+Title: Director, Climate Change Division,
+       Ministry of Sustainable Development,
+       Energy, Science and Technology
+Signature: _____________________
+Date: __________________________</div>
+  </div>
+</section>
+
+<!-- ═══════════════════════ TAB: BUDGET ═══════════════════════ -->
+<section id="tab-budget" class="tab-panel hidden fade-in space-y-6">
+  <div class="card p-6">
+    <h3 class="text-sm font-bold text-slate-800 mb-4">Grant Budget Breakdown — USD 40,000</h3>
+    <div class="overflow-x-auto">
+      <table class="w-full text-xs">
+        <thead><tr class="bg-slate-50 text-slate-600 uppercase tracking-wider text-[10px]"><th class="text-left py-3 px-3 font-bold border-b">Category</th><th class="text-left py-3 px-3 font-bold border-b">Item</th><th class="text-right py-3 px-3 font-bold border-b">Amount</th></tr></thead>
+        <tbody class="divide-y divide-slate-100">
+          <tr class="bg-cyan-50/50"><td class="py-3 px-3 font-bold" colspan="2">A · Prototype Hardware (3 units)</td><td class="py-3 px-3 text-right mono font-bold">$4,200</td></tr>
+          <tr><td class="py-2 px-3 pl-8 text-slate-600">Digester fabrication</td><td class="py-2 px-3 text-slate-500">3 ferrocement units</td><td class="py-2 px-3 text-right mono">$1,800</td></tr>
+          <tr><td class="py-2 px-3 pl-8 text-slate-600">Sensor packages</td><td class="py-2 px-3 text-slate-500">3 complete sets</td><td class="py-2 px-3 text-right mono">$900</td></tr>
+          <tr><td class="py-2 px-3 pl-8 text-slate-600">Feedstock pre-treatment</td><td class="py-2 px-3 text-slate-500">Sorting + mixing equipment</td><td class="py-2 px-3 text-right mono">$600</td></tr>
+          <tr><td class="py-2 px-3 pl-8 text-slate-600">Installation labor</td><td class="py-2 px-3 text-slate-500">3 sites</td><td class="py-2 px-3 text-right mono">$900</td></tr>
+
+          <tr class="bg-blue-50/50"><td class="py-3 px-3 font-bold" colspan="2">B · Service Providers</td><td class="py-3 px-3 text-right mono font-bold">$17,000</td></tr>
+          <tr><td class="py-2 px-3 pl-8 text-slate-600">SP1 — Saint Lucian fabricator</td><td class="py-2 px-3 text-slate-500">Digester design + build</td><td class="py-2 px-3 text-right mono">$8,000</td></tr>
+          <tr><td class="py-2 px-3 pl-8 text-slate-600">SP2 — IoT developer</td><td class="py-2 px-3 text-slate-500">Firmware + gateway + cloud</td><td class="py-2 px-3 text-right mono">$9,000</td></tr>
+
+          <tr class="bg-amber-50/50"><td class="py-3 px-3 font-bold" colspan="2">C · Field Testing (6 months)</td><td class="py-3 px-3 text-right mono font-bold">$8,600</td></tr>
+          <tr><td class="py-2 px-3 pl-8 text-slate-600">Site prep + logistics</td><td class="py-2 px-3 text-slate-500">3 sites (SALCC, hotel, household)</td><td class="py-2 px-3 text-right mono">$2,400</td></tr>
+          <tr><td class="py-2 px-3 pl-8 text-slate-600">Sensor spares</td><td class="py-2 px-3 text-slate-500">Consumables</td><td class="py-2 px-3 text-right mono">$1,200</td></tr>
+          <tr><td class="py-2 px-3 pl-8 text-slate-600">Field technician</td><td class="py-2 px-3 text-slate-500">Part-time, 6 months</td><td class="py-2 px-3 text-right mono">$3,600</td></tr>
+          <tr><td class="py-2 px-3 pl-8 text-slate-600">Data collection + QA</td><td class="py-2 px-3 text-slate-500">Analysis</td><td class="py-2 px-3 text-right mono">$1,400</td></tr>
+
+          <tr class="bg-purple-50/50"><td class="py-3 px-3 font-bold" colspan="2">D · Software & Platform</td><td class="py-3 px-3 text-right mono font-bold">$7,000</td></tr>
+          <tr><td class="py-2 px-3 pl-8 text-slate-600">GCFT cloud integration</td><td class="py-2 px-3 text-slate-500">API + auth</td><td class="py-2 px-3 text-right mono">$3,000</td></tr>
+          <tr><td class="py-2 px-3 pl-8 text-slate-600">Carbon engine customization</td><td class="py-2 px-3 text-slate-500">GS ACDM methodology</td><td class="py-2 px-3 text-right mono">$2,500</td></tr>
+          <tr><td class="py-2 px-3 pl-8 text-slate-600">Household dashboard</td><td class="py-2 px-3 text-slate-500">SMS + WhatsApp</td><td class="py-2 px-3 text-right mono">$1,500</td></tr>
+
+          <tr class="bg-slate-100"><td class="py-3 px-3 font-bold" colspan="2">E · Coaching, Docs & IP</td><td class="py-3 px-3 text-right mono font-bold">$2,200</td></tr>
+          <tr><td class="py-2 px-3 pl-8 text-slate-600">ESO coaching</td><td class="py-2 px-3 text-slate-500">6 months</td><td class="py-2 px-3 text-right mono">$1,000</td></tr>
+          <tr><td class="py-2 px-3 pl-8 text-slate-600">Technical documentation</td><td class="py-2 px-3 text-slate-500">VVB-ready package</td><td class="py-2 px-3 text-right mono">$1,200</td></tr>
+
+          <tr class="bg-slate-100"><td class="py-3 px-3 font-bold" colspan="2">F · Contingency</td><td class="py-3 px-3 text-right mono font-bold">$1,000</td></tr>
+
+          <tr class="bg-cyan-100 border-t-2 border-cyan-500"><td class="py-4 px-3 font-black text-sm" colspan="2">GRAND TOTAL</td><td class="py-4 px-3 text-right mono font-black text-cyan-700 text-base">$40,000</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════════════ TAB: TIMELINE ═══════════════════════ -->
+<section id="tab-timeline" class="tab-panel hidden fade-in space-y-6">
+  <div class="card p-6">
+    <h3 class="text-sm font-bold text-slate-800 mb-5">Six-Month Build Timeline (Dec 2026 – May 2027)</h3>
+    <div class="space-y-3">
+      <div class="flex gap-4"><div class="w-24 text-right flex-shrink-0"><div class="text-xs font-bold text-cyan-700">Dec 2026</div><div class="text-[10px] text-slate-400 mono">M1</div></div><div class="flex-1 bg-cyan-50 border-l-4 border-cyan-500 rounded-r-lg p-4"><div class="text-xs font-bold text-slate-800">Kickoff &amp; Contracting</div><div class="text-[11px] text-slate-600 mt-1">ESO onboarding · SP contracts signed · SALCC + hotel partner confirmed</div></div></div>
+      <div class="flex gap-4"><div class="w-24 text-right flex-shrink-0"><div class="text-xs font-bold text-cyan-700">Jan 2027</div><div class="text-[10px] text-slate-400 mono">M2</div></div><div class="flex-1 bg-blue-50 border-l-4 border-blue-500 rounded-r-lg p-4"><div class="text-xs font-bold text-slate-800">Design Finalization</div><div class="text-[11px] text-slate-600 mt-1">CAD drawings · Co-digestion spec · BOM locked · Procurement initiated</div></div></div>
+      <div class="flex gap-4"><div class="w-24 text-right flex-shrink-0"><div class="text-xs font-bold text-cyan-700">Feb 2027</div><div class="text-[10px] text-slate-400 mono">M3</div></div><div class="flex-1 bg-amber-50 border-l-4 border-amber-500 rounded-r-lg p-4"><div class="text-xs font-bold text-slate-800">Digester Fabrication</div><div class="text-[11px] text-slate-600 mt-1">3 ferrocement units · Site prep complete at all three locations</div></div></div>
+      <div class="flex gap-4"><div class="w-24 text-right flex-shrink-0"><div class="text-xs font-bold text-cyan-700">Mar 2027</div><div class="text-[10px] text-slate-400 mono">M4</div></div><div class="flex-1 bg-purple-50 border-l-4 border-purple-500 rounded-r-lg p-4"><div class="text-xs font-bold text-slate-800">Sensor Integration</div><div class="text-[11px] text-slate-600 mt-1">Firmware flashed · Gateway tested · GCFT integration live</div></div></div>
+      <div class="flex gap-4"><div class="w-24 text-right flex-shrink-0"><div class="text-xs font-bold text-cyan-700">Apr 2027</div><div class="text-[10px] text-slate-400 mono">M5</div></div><div class="flex-1 bg-sky-50 border-l-4 border-sky-500 rounded-r-lg p-4"><div class="text-xs font-bold text-slate-800">Field Installation &amp; Trial</div><div class="text-[11px] text-slate-600 mt-1">3 installations (SALCC · hotel · household) · 4-week continuous data trial</div></div></div>
+      <div class="flex gap-4"><div class="w-24 text-right flex-shrink-0"><div class="text-xs font-bold text-cyan-700">May 2027</div><div class="text-[10px] text-slate-400 mono">M6</div></div><div class="flex-1 bg-gradient-to-r from-cyan-50 to-cyan-100 border-l-4 border-cyan-600 rounded-r-lg p-4"><div class="text-xs font-bold text-slate-800">Analysis &amp; Demo Day</div><div class="text-[11px] text-slate-600 mt-1">Prototype report · Public demo at SALCC · Investor pitch · VVB package</div></div></div>
+    </div>
+  </div>
+
+  <div class="card p-6">
+    <h3 class="text-sm font-bold text-slate-800 mb-4">Scale-Up Roadmap (2027 – 2033)</h3>
+    <table class="w-full text-xs">
+      <thead><tr class="bg-slate-50 text-slate-600 uppercase tracking-wider text-[10px]"><th class="text-left py-3 px-3 font-bold border-b">Phase</th><th class="text-left py-3 px-3 font-bold border-b">Timeline</th><th class="text-left py-3 px-3 font-bold border-b">Units</th><th class="text-left py-3 px-3 font-bold border-b">People Served</th><th class="text-left py-3 px-3 font-bold border-b">Financing</th></tr></thead>
+      <tbody class="divide-y divide-slate-100">
+        <tr><td class="py-3 px-3 font-semibold">Prototype</td><td class="py-3 px-3">Dec 2026 – May 2027</td><td class="py-3 px-3 mono">3</td><td class="py-3 px-3 mono">~30</td><td class="py-3 px-3 text-slate-500">$40K Conecta</td></tr>
+        <tr><td class="py-3 px-3 font-semibold">Pilot</td><td class="py-3 px-3">2027 – 2028</td><td class="py-3 px-3 mono">200</td><td class="py-3 px-3 mono">1,200</td><td class="py-3 px-3 text-slate-500">GCF + CDB blended</td></tr>
+        <tr><td class="py-3 px-3 font-semibold">Scale</td><td class="py-3 px-3">2029</td><td class="py-3 px-3 mono">500</td><td class="py-3 px-3 mono">3,000</td><td class="py-3 px-3 text-slate-500">Carbon pre-finance</td></tr>
+        <tr><td class="py-3 px-3 font-semibold">National</td><td class="py-3 px-3">2031</td><td class="py-3 px-3 mono">2,000</td><td class="py-3 px-3 mono">12,000</td><td class="py-3 px-3 text-slate-500">Green bond / A6.2</td></tr>
+        <tr><td class="py-3 px-3 font-semibold">Regional</td><td class="py-3 px-3">2033+</td><td class="py-3 px-3 mono">8,000</td><td class="py-3 px-3 mono">48,000</td><td class="py-3 px-3 text-slate-500">OECS replication</td></tr>
+      </tbody>
+    </table>
+  </div>
+</section>
+
+</main>
+
+<footer class="bg-white border-t border-slate-200 px-6 py-4 text-center text-[11px] text-slate-400">
+  BiogasSTLucia v1.0 · Joint Venture Recycle Organics × GCFT Platform · Conecta Caribbean + CDB/GCF Application Platform · © 2026
+</footer>
+
+<script>
+/* ═══════════════════════════════════════════════════════════
+   TAB SWITCHING
+   ═══════════════════════════════════════════════════════════ */
+function initTabs(){
+  document.querySelectorAll('.tab-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('tab-active'));
+      document.querySelectorAll('.tab-panel').forEach(p => p.classList.add('hidden'));
+      btn.classList.add('tab-active');
+      const panel = document.getElementById('tab-' + btn.dataset.tab);
+      if (panel) panel.classList.remove('hidden');
+      if (btn.dataset.tab === 'sensors' && !sensorChart) initSensorChart();
+      if (btn.dataset.tab === 'investor' && !investorChart) initInvestorChart();
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    });
+  });
+}
+
+/* ═══════════════════════════════════════════════════════════
+   LIVE SENSOR SIMULATION
+   ═══════════════════════════════════════════════════════════ */
+let sensorChart = null;
+let sensorHistory = { flow:[], pressure:[], temp:[], ch4:[] };
+
+function tickSensors(){
+  const flow = 1.4 + Math.random() * 0.6;
+  const pressure = 3.5 + Math.random() * 2;
+  const temp = 35 + Math.random() * 3;
+  const ch4 = 58 + Math.random() * 6;
+  const f = document.getElementById('simFlow');
+  const p = document.getElementById('simPressure');
+  const t = document.getElementById('simTemp');
+  const c = document.getElementById('simCH4');
+  if (f) f.textContent = flow.toFixed(2);
+  if (p) p.textContent = pressure.toFixed(1);
+  if (t) t.textContent = temp.toFixed(1);
+  if (c) c.textContent = ch4.toFixed(1);
+  if (sensorChart){
+    sensorHistory.flow.push(flow); sensorHistory.pressure.push(pressure);
+    sensorHistory.temp.push(temp); sensorHistory.ch4.push(ch4);
+    if (sensorHistory.flow.length > 30){
+      ['flow','pressure','temp','ch4'].forEach(k => sensorHistory[k].shift());
+    }
+    sensorChart.data.labels = sensorHistory.flow.map((_, i) => i);
+    sensorChart.data.datasets[0].data = sensorHistory.flow;
+    sensorChart.data.datasets[1].data = sensorHistory.pressure;
+    sensorChart.data.datasets[2].data = sensorHistory.temp;
+    sensorChart.data.datasets[3].data = sensorHistory.ch4;
+    sensorChart.update('none');
+  }
+}
+
+function initSensorChart(){
+  const ctx = document.getElementById('chartLiveSensors');
+  if (!ctx) return;
+  sensorChart = new Chart(ctx, {
+    type: 'line',
+    data: {
+      labels: [],
+      datasets: [
+        { label:'Flow (m³/h)', data:[], borderColor:'#06b6d4', backgroundColor:'rgba(6,182,212,0.1)', tension:0.4, borderWidth:2 },
+        { label:'Pressure (kPa)', data:[], borderColor:'#3b82f6', backgroundColor:'rgba(59,130,246,0.1)', tension:0.4, borderWidth:2 },
+        { label:'Temp (°C)', data:[], borderColor:'#f59e0b', backgroundColor:'rgba(245,158,11,0.1)', tension:0.4, borderWidth:2 },
+        { label:'CH₄ (%)', data:[], borderColor:'#8b5cf6', backgroundColor:'rgba(139,92,246,0.1)', tension:0.4, borderWidth:2 }
+      ]
+    },
+    options: {
+      responsive:true, maintainAspectRatio:false, animation:false,
+      plugins:{ legend:{ position:'bottom', labels:{ font:{ size:11 }, padding:12, boxWidth:12 }}},
+      scales:{ y:{ beginAtZero:true, grid:{ color:'#e2e8f0' }, ticks:{ font:{ size:10 }}},
+               x:{ grid:{ display:false }, ticks:{ display:false }}}
+    }
+  });
+}
+
+/* ═══════════════════════════════════════════════════════════
+   INVESTOR CASHFLOW CHART
+   ═══════════════════════════════════════════════════════════ */
+let investorChart = null;
+
+function initInvestorChart(){
+  const ctx = document.getElementById('chartInvestorCashflow');
+  if (!ctx) return;
+  investorChart = new Chart(ctx, {
+    type: 'bar',
+    data: {
+      labels: ['Y1 (2027)','Y2 (2028)','Y3 (2029)','Y4 (2030)','Y5 (2031)','Y6 (2032)','Y7 (2033)'],
+      datasets: [
+        { label: 'Revenue ($K)', data: [2, 14, 48, 96, 180, 240, 290], backgroundColor: '#67e8f9', borderRadius: 6 },
+        { label: 'Net Cash Flow ($K)', data: [-140, -45, 20, 90, 160, 210, 250], backgroundColor: '#06b6d4', borderRadius: 6 }
+      ]
+    },
+    options: {
+      responsive:true, maintainAspectRatio:false,
+      plugins:{
+        legend:{ position:'bottom', labels:{ font:{ size:11 }, padding:14, boxWidth:12 }},
+        tooltip:{ backgroundColor:'#0f172a', padding:12, cornerRadius:8 }
+      },
+      scales:{
+        y:{ beginAtZero:true, grid:{ color:'#e2e8f0' }, ticks:{ font:{ size:10 }, callback:v => '$' + v + 'K' }},
+        x:{ grid:{ display:false }, ticks:{ font:{ size:10 }}}
+      }
+    }
+  });
+}
+
+/* ═══════════════════════════════════════════════════════════
+   COPY MOU
+   ═══════════════════════════════════════════════════════════ */
+function copyMOU(){
+  const el = document.getElementById('mouText');
+  if (!el) return;
+  const text = el.textContent;
+  navigator.clipboard.writeText(text).then(() => {
+    alert('✓ MOU template copied to clipboard (' + text.length + ' characters)');
+  }).catch(() => {
+    alert('Copy failed — please select and copy manually (Ctrl+C)');
+  });
+}
+
+/* ═══════════════════════════════════════════════════════════
+   INIT
+   ═══════════════════════════════════════════════════════════ */
+document.addEventListener('DOMContentLoaded', () => {
+  initTabs();
+  setInterval(tickSensors, 2000);
+  console.log('%cBiogasSTLucia Master Platform v1.0 ready', 'color:#06b6d4;font-weight:bold;font-size:14px');
+});
+</script>
+</body>
+</html>
